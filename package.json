@@ -2,7 +2,7 @@
   "name": "format-json-files",
   "version": "1.0.0",
   "bin": "cli.js",
-  "description": "Formats json files in the given path.  Files have to have the .json extension.",
+  "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
   "main": "./index.js",
   "scripts": {
     "test": "snyk test && xo && nyc ava",

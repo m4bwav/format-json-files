@@ -28,9 +28,8 @@ Installation is easiest through npm:
 ```
 var formatJsonFiles = require('format-json-files');
 
-formatJsonFiles(url, function(title){
-  console.log(title);
-});
+formatJsonFiles('./data');
+
 ```
 
 ## CLI

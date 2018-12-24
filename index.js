@@ -13,7 +13,11 @@ module.exports = function (pathArgument) {
 
   function processPathForJsonFileFormatting(targetPath) {
     if (!targetPath) {
-      throw new Error('Invalid path');
+      throw new Error('Path argument not set');
+    }
+
+    if (typeof targetPath !== 'string') {
+      throw new TypeError('Target path argument is not a string');
     }
 
     if (isExistingFilePath(targetPath)) {
@@ -85,6 +89,6 @@ module.exports = function (pathArgument) {
   function writeFormattedJsonToPath(targetObj, targetPath) {
     const serializedObject = JSON.stringify(targetObj, null, 4);
 
-    fs.writeFile(targetPath, serializedObject);
+    fs.writeFileSync(targetPath, serializedObject);
   }
 };

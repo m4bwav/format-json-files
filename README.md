@@ -11,8 +11,9 @@
   
 [![NPM](https://nodei.co/npm-dl/format-json-files.png?months=3)](https://nodei.co/npm/format-json-files/)
 
-Npm package to retrieve the title at a given url.  Largely combines articleTitle with request.
+Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.
 
+When a directory path is supplied format-json-files will search that directory and any sub-directories in a recursive manner and format any .json files found in these directories.  If a single file path is supplied, format-json-files will attempt to format the file assuming its a json file.
 
 ## Installation
 
@@ -48,8 +49,7 @@ $ format-json-files --help
     $ format-json-files ".\"
 ```
 
-The formatJsonFiles will use the callback function with the following signature callback(title, requestError).
-The requestError will be whatever error request passes back, the title will be empty if there was an issue.
+`JSON.stringify(targetObj, null, 4);` is used to format the json files. `fs.readFileSync(targetPath)` is used to read the files. `fs.writeFileSync(targetPath, serializedObject);` is used to write the files. I would have provided options for any or all of these things and more, but I wasn't sure what would be worth spending time on.  So if anyone has any requests feel free to file one in github and if I have time I'll take a look.
 ## License
 
 MIT © [Mark Rogers](http://www.markdavidrogers.com)

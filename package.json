@@ -1,6 +1,6 @@
 {
     "name": "format-json-files",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "bin": "cli.js",
     "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
     "main": "./index.js",

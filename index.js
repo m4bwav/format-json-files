@@ -86,17 +86,21 @@ module.exports = function (pathArgument) {
       return JSON.parse(fileText);
     } catch (err) {
       if (err instanceof SyntaxError) {
-        const message = 'Syntax Error processing file: `' + targetPath + '`. Error: ' + err;
+        const message = 'Syntax Error processing file: `' + targetPath + '`. Triggering Error: ' + err;
 
         throw new Error(message);
       }
     }
-    return JSON.parse(fileText);
   }
 
   function writeFormattedJsonToPath(targetObj, targetPath) {
-    const serializedObject = JSON.stringify(targetObj, null, 4);
+    try {
+      const serializedObject = JSON.stringify(targetObj, null, 4);
 
-    fs.writeFileSync(targetPath, serializedObject);
+      fs.writeFileSync(targetPath, serializedObject);
+    } catch (err) {
+      console.log('Error processing target file: ' + targetPath + ', skipping.');
+      console.log('Original Error: ' + err);
+    }
   }
 };

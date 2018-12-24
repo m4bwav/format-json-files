@@ -17,7 +17,7 @@ const properTestOutput = `{
 test('Won\'t work without a path parameter', t => {
   try {
     formatJsonFiles();
-  } catch (err) {
+  } catch (error) {
     t.pass();
   }
 });
@@ -25,7 +25,7 @@ test('Won\'t work without a path parameter', t => {
 test('Won\'t work with a non string path', t => {
   try {
     formatJsonFiles(1232);
-  } catch (err) {
+  } catch (error) {
     t.pass();
   }
 });
@@ -33,7 +33,7 @@ test('Won\'t work with a non string path', t => {
 test('Won\'t work with an invalid file name', t => {
   try {
     formatJsonFiles('afewaefagefwf123124');
-  } catch (err) {
+  } catch (error) {
     t.pass();
   }
 });
@@ -43,8 +43,8 @@ test('Should process a filename path', t => {
 
   try {
     formatJsonFiles(tempTestFile);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     t.fail();
     return;
   }
@@ -59,8 +59,8 @@ test('Should process a directory path', t => {
 
   try {
     formatJsonFiles(baseTempTestDataDirectory);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     t.fail();
     return;
   }

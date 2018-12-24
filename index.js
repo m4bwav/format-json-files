@@ -6,7 +6,7 @@ const path = require('path');
 /**
  * Formats any file at the path supplied or *.json file in any directory or sub directory if the path is a directory
  * @name formatJsonFiles
- * @param {String} Path - A file or directory path
+ * @param {String} pathArgument - A file or directory path
  */
 module.exports = function (pathArgument) {
   processPathForJsonFileFormatting(pathArgument);
@@ -62,9 +62,9 @@ module.exports = function (pathArgument) {
       const deserializedObject = readJsonFileToObject(filePath);
 
       writeFormattedJsonToPath(deserializedObject, filePath);
-    } catch (err) {
+    } catch (error) {
       console.log('Error processing target file: ' + filePath + ', skipping.');
-      console.log('Original Error: ' + err);
+      console.log('Original Error: ' + error);
     }
   }
   function isAJsonFileName(fileName) {
@@ -89,9 +89,9 @@ module.exports = function (pathArgument) {
     const fileText = fs.readFileSync(targetPath);
     try {
       return JSON.parse(fileText);
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        const message = 'Syntax Error processing file: `' + targetPath + '`. Triggering Error: ' + err;
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        const message = 'Syntax Error processing file: `' + targetPath + '`. Triggering Error: ' + error;
 
         throw new Error(message);
       }

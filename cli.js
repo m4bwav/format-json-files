@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 'use strict';
-const meow = require('meow')
-  ;
+const meow = require('meow');
 
-const formatJsonFiles = require('./')
-  ;
+const formatJsonFiles = require('.');
 
 const cli = meow(`
   Usage

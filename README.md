@@ -7,9 +7,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/m4bwav/format-json-files/master.svg)](https://coveralls.io/github/m4bwav/format-json-files?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/format-json-files/badge.svg?style=flat-square)](https://snyk.io/test/npm/format-json-files)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
-[![Gitter](https://badges.gitter.im/m4bwav/format-json-files.svg)](https://gitter.im/m4bwav/format-json-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  
-  
-[![NPM](https://nodei.co/npm-dl/format-json-files.png?months=3)](https://nodei.co/npm/format-json-files/)
+[![Gitter](https://badges.gitter.im/m4bwav/format-json-files.svg)](https://gitter.im/m4bwav/format-json-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.
 

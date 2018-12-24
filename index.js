@@ -82,7 +82,15 @@ module.exports = function (pathArgument) {
 
   function readJsonFileToObject(targetPath) {
     const fileText = fs.readFileSync(targetPath);
+    try {
+      return JSON.parse(fileText);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        const message = 'Syntax Error processing file: `' + targetPath + '`. Error: ' + err;
 
+        throw new Error(message);
+      }
+    }
     return JSON.parse(fileText);
   }
 

@@ -1,50 +1,50 @@
 {
-  "name": "format-json-files",
-  "version": "1.0.0",
-  "bin": "cli.js",
-  "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
-  "main": "./index.js",
-  "scripts": {
-    "test": "snyk test && xo && nyc ava",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "travis-after-success": "nyc report --reporter=text-lcov | coveralls"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/m4bwav/format-json-files.git"
-  },
-  "homepage": "https://github.com/m4bwav/format-json-files",
-  "bugs": {
-    "url": "http://github.com/m4bwav/format-json-files/issues"
-  },
-  "author": "Mark Rogers (http://www.markdavidrogers.com/)",
-  "files": [
-    "index.js",
-    "cli.js"
-  ],
-  "keywords": [
-    "json",
-    "format",
-    "file",
-    "pretty-print"
-  ],
-  "license": "MIT",
-  "xo": {
-    "rules": {
-      "xo/no-process-exit": "off",
-      "linebreak-style": "off",
-      "indent": [
-        "error",
-        2
-      ]
+    "name": "format-json-files",
+    "version": "1.0.0",
+    "bin": "cli.js",
+    "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
+    "main": "./index.js",
+    "scripts": {
+        "test": "snyk test && xo && nyc ava",
+        "coverage": "nyc report --reporter=text-lcov | coveralls",
+        "travis-after-success": "nyc report --reporter=text-lcov | coveralls"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/m4bwav/format-json-files.git"
+    },
+    "homepage": "https://github.com/m4bwav/format-json-files",
+    "bugs": {
+        "url": "http://github.com/m4bwav/format-json-files/issues"
+    },
+    "author": "Mark Rogers (http://www.markdavidrogers.com/)",
+    "files": [
+        "index.js",
+        "cli.js"
+    ],
+    "keywords": [
+        "json",
+        "format",
+        "file",
+        "pretty-print"
+    ],
+    "license": "MIT",
+    "xo": {
+        "rules": {
+            "xo/no-process-exit": "off",
+            "linebreak-style": "off",
+            "indent": [
+                "error",
+                2
+            ]
+        }
+    },
+    "devDependencies": {
+        "ava": "^1.0.1",
+        "del": "^3.0.0",
+        "nyc": "^13.1.0"
+    },
+    "dependencies": {
+        "meow": "^5.0.0"
     }
-  },
-  "devDependencies": {
-    "ava": "^1.0.1",
-    "del": "^3.0.0",
-    "nyc": "^13.1.0"
-  },
-  "dependencies": {
-    "meow": "^5.0.0"
-  }
 }

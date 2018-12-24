@@ -1,6 +1,6 @@
 {
     "name": "format-json-files",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "bin": "cli.js",
     "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
     "main": "./index.js",
@@ -42,7 +42,8 @@
     "devDependencies": {
         "ava": "^1.0.1",
         "del": "^3.0.0",
-        "nyc": "^13.1.0"
+        "nyc": "^13.1.0",
+        "synk": "0.0.2"
     },
     "dependencies": {
         "meow": "^5.0.0"

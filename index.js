@@ -9,61 +9,57 @@ const path = require('path');
  * @param {String} Path - A file or directory path
  */
 module.exports = function (pathArgument) {
-
   processPathForJsonFileFormatting(pathArgument);
 
   function processPathForJsonFileFormatting(targetPath) {
-    if(!targetPath){
-      throw new Error("Invalid path");
+    if (!targetPath) {
+      throw new Error('Invalid path');
     }
-    
-    if(isExistingFilePath(targetPath)){
+
+    if (isExistingFilePath(targetPath)) {
       formatJsonFile(targetPath);
 
       return;
     }
 
-    
-    if(isExistingDirectoryPath(targetPath)){
+    if (isExistingDirectoryPath(targetPath)) {
       formatDirectoryJsonFiles(targetPath);
 
       return;
     }
 
-    throw new Error("Invalid path");
+    throw new Error('Invalid path');
   }
 
-  function formatDirectoryJsonFiles(directoryPath){
-    if (!fs.existsSync(directoryPath)){
-      throw new Error("Directory path " + directoryPath + " does not exist.  Can't parse.")
+  function formatDirectoryJsonFiles(directoryPath) {
+    if (!fs.existsSync(directoryPath)) {
+      throw new Error('Directory path ' + directoryPath + ' does not exist.  Can\'t parse.');
     }
 
-    const files =  fs.readdirSync(directoryPath);
+    const files = fs.readdirSync(directoryPath);
 
-    for(var i=0; i < files.length; i++){
-        const entry = files[i];
+    for (let i = 0; i < files.length; i++) {
+      const entry = files[i];
 
-        const filename = path.join(directoryPath, entry);
+      const filename = path.join(directoryPath, entry);
 
-        const stat = fs.lstatSync(filename);
+      const stat = fs.lstatSync(filename);
 
-        if (stat.isDirectory()){
-          formatDirectoryJsonFiles(filename); 
-        }
-        else if (isAJsonFileName(filename)) {
-          formatJsonFile(filename);
-        };
+      if (stat.isDirectory()) {
+        formatDirectoryJsonFiles(filename);
+      } else if (isAJsonFileName(filename)) {
+        formatJsonFile(filename);
+      }
     }
   }
 
-
-  function formatJsonFile(filePath){
+  function formatJsonFile(filePath) {
     const deserializedObject = readJsonFileToObject(filePath);
 
-    WriteFormattedJsonToPath(deserializedObject, filePath);
+    writeFormattedJsonToPath(deserializedObject, filePath);
   }
-  function isAJsonFileName(fileName){
-    if(!fileName){
+  function isAJsonFileName(fileName) {
+    if (!fileName) {
       return false;
     }
 
@@ -72,21 +68,21 @@ module.exports = function (pathArgument) {
     return lowerCasedFileName.endsWith('.json');
   }
 
-  function isExistingFilePath(targetPath){
+  function isExistingFilePath(targetPath) {
     return fs.existsSync(targetPath) && fs.lstatSync(targetPath).isFile();
   }
-  
-  function isExistingDirectoryPath(targetPath){
+
+  function isExistingDirectoryPath(targetPath) {
     return fs.existsSync(targetPath) && fs.lstatSync(targetPath).isDirectory();
   }
 
-  function readJsonFileToObject(targetPath){
+  function readJsonFileToObject(targetPath) {
     const fileText = fs.readFileSync(targetPath);
 
     return JSON.parse(fileText);
   }
 
-  function WriteFormattedJsonToPath(targetObj, targetPath){
+  function writeFormattedJsonToPath(targetObj, targetPath) {
     const serializedObject = JSON.stringify(targetObj, null, 4);
 
     fs.writeFile(targetPath, serializedObject);

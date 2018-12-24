@@ -39,6 +39,10 @@
       ]
     }
   },
+  "devDependencies": {
+    "ava": "^1.0.1",
+    "nyc": "^13.1.0"
+  },
   "dependencies": {
     "meow": "^5.0.0"
   }

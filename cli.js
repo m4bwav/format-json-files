@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 'use strict';
-var meow = require('meow')
+const meow = require('meow')
   ;
 
-var formatJsonFiles = require('./')
+const formatJsonFiles = require('./')
   ;
 
-var cli = meow(`
+const cli = meow(`
   Usage
       $ format-json-files "<path>"
     
     Example
-      $ format-json-files ".\"
+      $ format-json-files ".\\"
 
 `);
 
-var input = cli.input[0];
+const input = cli.input[0];
 
 function init(targetPath) {
   formatJsonFiles(targetPath);

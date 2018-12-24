@@ -58,9 +58,14 @@ module.exports = function (pathArgument) {
   }
 
   function formatJsonFile(filePath) {
-    const deserializedObject = readJsonFileToObject(filePath);
+    try {
+      const deserializedObject = readJsonFileToObject(filePath);
 
-    writeFormattedJsonToPath(deserializedObject, filePath);
+      writeFormattedJsonToPath(deserializedObject, filePath);
+    } catch (err) {
+      console.log('Error processing target file: ' + filePath + ', skipping.');
+      console.log('Original Error: ' + err);
+    }
   }
   function isAJsonFileName(fileName) {
     if (!fileName) {
@@ -94,13 +99,8 @@ module.exports = function (pathArgument) {
   }
 
   function writeFormattedJsonToPath(targetObj, targetPath) {
-    try {
-      const serializedObject = JSON.stringify(targetObj, null, 4);
+    const serializedObject = JSON.stringify(targetObj, null, 4);
 
-      fs.writeFileSync(targetPath, serializedObject);
-    } catch (err) {
-      console.log('Error processing target file: ' + targetPath + ', skipping.');
-      console.log('Original Error: ' + err);
-    }
+    fs.writeFileSync(targetPath, serializedObject);
   }
 };

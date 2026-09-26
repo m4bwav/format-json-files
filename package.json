@@ -1,53 +1,79 @@
 {
-    "name": "format-json-files",
-    "version": "1.0.6",
-    "bin": "cli.js",
-    "description": "Formats json files in the given path.  Files have to have the .json extension when a directory is supplied.",
-    "main": "./index.js",
-    "scripts": {
-        "test": "snyk test && xo && nyc ava",
-        "coverage": "nyc report --reporter=text-lcov | coveralls",
-        "travis-after-success": "nyc report --reporter=text-lcov | coveralls"
+  "name": "format-json-files",
+  "version": "1.0.6",
+  "description": "Format JSON files in place: one file, or every .json file in a directory tree. Never rewrites a file it cannot keep exactly. Key sorting, check mode for CI, a CLI. Zero dependencies, TypeScript, ESM and CommonJS, Node 20+.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4bwav/format-json-files.git"
+  },
+  "homepage": "https://github.com/m4bwav/format-json-files#readme",
+  "bugs": {
+    "url": "https://github.com/m4bwav/format-json-files/issues"
+  },
+  "author": "Mark Rogers (https://www.markdavidrogers.com)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/m4bwav/format-json-files.git"
-    },
-    "homepage": "https://github.com/m4bwav/format-json-files",
-    "bugs": {
-        "url": "http://github.com/m4bwav/format-json-files/issues"
-    },
-    "author": "Mark Rogers (http://www.markdavidrogers.com/)",
-    "files": [
-        "index.js",
-        "cli.js"
-    ],
-    "keywords": [
-        "json",
-        "format",
-        "file",
-        "pretty-print"
-    ],
-    "license": "MIT",
-    "xo": {
-        "rules": {
-            "xo/no-process-exit": "off",
-            "linebreak-style": "off",
-            "indent": [
-                "error",
-                2
-            ]
-        }
-    },
-    "devDependencies": {
-        "ava": "^1.0.1",
-        "coveralls": "^3.0.2",
-        "del": "^3.0.0",
-        "nyc": "^13.1.0",
-        "snyk": "^1.118.2",
-        "xo": "^0.23.0"
-    },
-    "dependencies": {
-        "meow": "^5.0.0"
-    }
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "bin": {
+    "format-json-files": "./dist/cli.mjs"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "npm run build && npm run test:dist",
+    "test:dist": "node --test test/golden/golden.test.js test/unit/scan.test.js test/unit/serialize.test.js test/unit/options.test.js test/functional/walk.test.js test/cli/cli.test.js test/package/shape.test.js",
+    "test:golden": "node --test test/golden/golden.test.js",
+    "test:consumers": "npm run build && node --test test/consumers/consumers.test.js",
+    "coverage": "npm run build && c8 --check-coverage --lines 95 --branches 90 --exclude-after-remap --include \"src/**\" --reporter text --reporter lcov node --test test/golden/golden.test.js test/unit/scan.test.js test/unit/serialize.test.js test/unit/options.test.js test/functional/walk.test.js test/cli/cli.test.js",
+    "lint": "xo",
+    "typecheck": "tsc --noEmit",
+    "check": "publint && attw --pack . && npm pack --dry-run",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run check && npm test"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "!dist/cli.mjs.map"
+  ],
+  "keywords": [
+    "json",
+    "format",
+    "formatter",
+    "pretty-print",
+    "prettify",
+    "sort-keys",
+    "file",
+    "directory",
+    "cli",
+    "typescript",
+    "esm",
+    "cjs"
+  ],
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@tsconfig/node-ts": "^23.6.4",
+    "@tsconfig/node20": "^20.1.10",
+    "@types/node": "^24.13.6",
+    "c8": "^12.0.0",
+    "publint": "^0.3.24",
+    "tsdown": "0.23.0",
+    "typescript": "~6.0.3",
+    "xo": "^5.0.1"
+  },
+  "allowScripts": {
+    "unrs-resolver": false
+  }
 }

@@ -17,3 +17,10 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 
 ## [2026-09-26] update | Plan ruled
 - Mark accepted every recommendation in the decisions table (D1-D16, E1-E8). Decision record status accepted. Phase 2 starts on branch v2.
+
+## [2026-09-26] add | Phase 2: golden test green, canary, untouched
+- Branch v2: old index.js, cli.js, test.js, .travis.yml, .snyk and the lockfile removed; src/ (scan, serialize, format, format-json-files, index, require, cli) and test/golden/golden.test.js written. npm install: 493 packages, 0 vulnerabilities.
+- First full golden run on the first green build: 78 of 78 (33 library cases on each build, 12 bin cases). Before that, two fixes in src/cli.ts and the test's E2 skip-check (the bin's error line had the path appended; 1.0.6's line is exact).
+- Canary: `indent = 4` changed to `indent = 3` in src/format-json-files.ts, build, `node --test test/golden/golden.test.js`: pass 40, fail 38. Reverted with `git checkout -- src/`, rebuilt: pass 78, fail 0.
+- check-golden-untouched.sh: 1.0.6.json, capture-1.0.6.cjs, capture-fixtures.cjs and codec.cjs unchanged since 7107861.
+- Declaration trap: an `export =` function merged with a namespace re-exporting types under their own names made tsdown write `type FormatOptions = FormatOptions`; the types are now declared as Options, Report and Skipped and exported under the public names.

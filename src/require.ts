@@ -22,14 +22,16 @@ function formatJsonFiles(targetPath: string, options?: Options): Report {
   return format(targetPath, options);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
+// The DefinitelyTyped form for a callable CommonJS export: the namespace re-exports the function under its two extra names.
+// Assigning the properties directly would make TypeScript declare `var formatJsonFiles: typeof formatJsonFiles` inside the
+// namespace, which refers to itself (TS2502) for every CommonJS consumer.
 declare namespace formatJsonFiles {
+  export {formatJsonFiles as default, formatJsonFiles};
   export type FormatOptions = Options;
   export type FormatReport = Report;
   export type SkippedFile = Skipped;
 }
 
-formatJsonFiles.default = formatJsonFiles;
-formatJsonFiles.formatJsonFiles = formatJsonFiles;
+Object.assign(formatJsonFiles, {default: formatJsonFiles, formatJsonFiles});
 
 export default formatJsonFiles;

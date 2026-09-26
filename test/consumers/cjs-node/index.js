@@ -1,43 +1,31 @@
-// A consumer written in CommonJS: require() of the installed package, used exactly as 1.1.7's README showed it (plan D2).
-// Its argument is the base URL of the fixture server the runner started; fetch is replaced with one that sends the package's
-// https://api.stackexchange.com requests there.
+// A consumer written in CommonJS: require() of the installed package, called exactly as 1.0.6's README showed it (plan D2),
+// on a temporary tree it makes and removes itself.
 'use strict';
 
 const assert = require('node:assert/strict');
-const process = require('node:process');
-const stackExchangeMarkdownRetriever = require('stack-exchange-markdown-retriever');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const formatJsonFiles = require('format-json-files');
 // Destructuring, the named-import habit in CommonJS.
-const {retrieveMarkdown, StackExchangeError} = require('stack-exchange-markdown-retriever');
+const {formatJsonFiles: named} = require('format-json-files');
 
-const base = process.argv[2];
-const realFetch = fetch;
-globalThis.fetch = (input, init) => {
-  const url = new URL(String(input));
-  assert.equal(url.origin, 'https://api.stackexchange.com');
-  return realFetch(`${base}${url.pathname}${url.search}`, init);
-};
+assert.match(require.resolve('format-json-files'), /[/\\]dist[/\\]index\.cjs$/u, 'require resolves to the CommonJS build');
+assert.equal(typeof formatJsonFiles, 'function');
+assert.equal(named, formatJsonFiles);
+assert.equal(formatJsonFiles.default, formatJsonFiles);
 
-assert.match(require.resolve('stack-exchange-markdown-retriever'), /[/\\]dist[/\\]index\.cjs$/u, 'require resolves to the CommonJS build');
-assert.equal(typeof stackExchangeMarkdownRetriever.retrieveMarkdown, 'function');
-assert.equal(stackExchangeMarkdownRetriever.default.retrieveMarkdown, retrieveMarkdown);
-assert.equal(typeof StackExchangeError, 'function');
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'fjf-consumer-cjs-'));
+try {
+  fs.mkdirSync(path.join(root, 'data'));
+  fs.writeFileSync(path.join(root, 'data', 'a.json'), '{"a":2343, "b":"asdf"}');
+  // The old README's call.
+  const report = formatJsonFiles(path.join(root, 'data'));
+  assert.equal(fs.readFileSync(path.join(root, 'data', 'a.json'), 'utf8'), '{\n    "a": 2343,\n    "b": "asdf"\n}');
+  assert.deepEqual(report.skipped, []);
+  assert.throws(() => formatJsonFiles(path.join(root, 'missing')), {message: 'Invalid path'});
+} finally {
+  fs.rmSync(root, {recursive: true, force: true});
+}
 
-assert.throws(() => {
-  retrieveMarkdown({site: 'scifi.stackexchange.com'}, () => {});
-}, {message: 'Need an entity id to read'});
-
-// The old README's call.
-const options = {
-  site: 'scifi.stackexchange.com',
-  entityId: 127_968,
-};
-
-stackExchangeMarkdownRetriever.retrieveMarkdown(options, (markdown, error) => {
-  assert.equal(error, null);
-  assert.match(markdown, /^Why is the \*\*question\*\*/u);
-  stackExchangeMarkdownRetriever.retrieveMarkdown({entityId: 9001}, (missing, apiError) => {
-    assert.equal(missing, null);
-    assert.ok(apiError instanceof StackExchangeError);
-    console.log('cjs-node ok');
-  });
-});
+console.log('cjs-node ok');

@@ -2,9 +2,9 @@
 Consumer fixtures: install the package into a scratch project outside the repository, and use each published artifact the way a consumer would. Needs the network once to install TypeScript and the Node types into that project (the npm cache usually has them).
 
 - By default the package is the tarball `npm pack` makes from the current dist/; `npm run test:consumers` builds dist/ first. CI builds once on Node 24 and runs this file directly on each Node line, because the build tools need Node 22.18 or later.
-- CONSUMER_PACKAGE=stack-exchange-markdown-retriever@<version> installs that version from the registry instead of packing; verify-published.yml checks a release this way.
+- CONSUMER_PACKAGE=format-json-files@<version> installs that version from the registry instead of packing; verify-published.yml checks a release this way.
 - CONSUMER_RUNTIMES=bun,deno also runs the ES module fixture, the CommonJS fixture (Bun only) and the bin under Bun and Deno; the CI Bun and Deno jobs set it. A runtime it names must be installed.
-- The fixtures that make requests talk to test/golden/fixture-server.cjs, which this file starts on 127.0.0.1: each runtime fixture replaces fetch with one that sends https://api.stackexchange.com requests there, and the bin runs with test/helpers/cli-preload.mjs loaded, so nothing here touches the internet after the install.
+- Every fixture and the bin work on temporary trees under the system temp directory, never on the workspace's own files.
 */
 import assert from 'node:assert/strict';
 import {exec, execFile} from 'node:child_process';
@@ -12,6 +12,7 @@ import {
   access,
   cp,
   mkdtemp,
+  readFile,
   rm,
   writeFile,
 } from 'node:fs/promises';
@@ -20,12 +21,11 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import {after, before, test} from 'node:test';
-import {fileURLToPath, pathToFileURL} from 'node:url';
+import {fileURLToPath} from 'node:url';
 
 const load = createRequire(import.meta.url);
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const fixtures = fileURLToPath(new URL('.', import.meta.url));
-const fixtureServer = load('../golden/fixture-server.cjs');
 
 const RUNTIME_FIXTURES = ['esm-node', 'cjs-node'];
 const TYPE_FIXTURES = ['ts-nodenext-esm', 'ts-nodenext-cjs', 'ts-bundler', 'ts-node10'];
@@ -38,7 +38,6 @@ const registryPackage = process.env.CONSUMER_PACKAGE;
 const runtimes = new Set((process.env.CONSUMER_RUNTIMES ?? '').split(',').map(name => name.trim()).filter(Boolean));
 
 let workspace;
-let server;
 
 function settle(error, stdout, stderr) {
   return {
@@ -80,7 +79,7 @@ function unlessRuntime(name) {
 }
 
 before(async () => {
-  workspace = await mkdtemp(path.join(tmpdir(), 'semr-consumers-'));
+  workspace = await mkdtemp(path.join(tmpdir(), 'fjf-consumers-'));
   let spec = registryPackage;
   if (spec === undefined) {
     // Pack without lifecycle scripts, so stdout holds only npm's JSON and the tarball holds the dist/ under test.
@@ -104,15 +103,9 @@ before(async () => {
   for (const fixture of TYPE_FIXTURES) {
     await cp(path.join(fixtures, 'types', 'assertions.ts'), path.join(workspace, fixture, 'index.ts'));
   }
-
-  // The fetch wrapper the bin runs with (see the bin test).
-  await cp(path.join(root, 'test', 'helpers'), path.join(workspace, 'helpers'), {recursive: true});
-
-  server = await fixtureServer.start();
 });
 
 after(async () => {
-  await server?.close();
   if (workspace && process.env.KEEP_CONSUMER_WORKSPACE === undefined) {
     await rm(workspace, {recursive: true, force: true});
   } else if (workspace) {
@@ -120,14 +113,14 @@ after(async () => {
   }
 });
 
-test('esm-node: default and named imports from an ES module, both call forms, against the fixture server', async () => {
-  const result = await node(['esm-node/index.js', server.base], workspace);
+test('esm-node: default and named imports from an ES module, on a temporary tree', async () => {
+  const result = await node(['esm-node/index.js'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.equal(result.stdout.trim(), 'esm-node ok');
 });
 
 test('cjs-node: require() from a CommonJS module, as the old README showed it', async () => {
-  const result = await node(['cjs-node/index.js', server.base], workspace);
+  const result = await node(['cjs-node/index.js'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.equal(result.stdout.trim(), 'cjs-node ok');
 });
@@ -149,58 +142,60 @@ for (const fixture of TYPE_FIXTURES) {
   });
 }
 
-test('bin: npx runs the installed stack-exchange-markdown-retriever command', async () => {
+test('bin: npx runs the installed format-json-files command on a temporary tree', async () => {
   if (process.platform === 'win32') {
-    await access(path.join(workspace, 'node_modules', '.bin', 'stack-exchange-markdown-retriever.cmd'));
+    await access(path.join(workspace, 'node_modules', '.bin', 'format-json-files.cmd'));
   }
 
-  // --no: never download; the command must come from the installed package. The preload points fetch at the fixture server.
-  const preload = pathToFileURL(path.join(workspace, 'helpers', 'cli-preload.mjs')).href;
-  const environment = `FIXTURE_BASE=${server.base}`;
-  const withPreload = command => (process.platform === 'win32'
-    ? `set "${environment}" && set "NODE_OPTIONS=--import=${preload}" && ${command}`
-    : `${environment} NODE_OPTIONS="--import=${preload}" ${command}`);
-  const question = await shell(withPreload('npx --no stack-exchange-markdown-retriever 1'), workspace);
-  assert.equal(question.code, 0, question.output);
-  assert.equal(question.stdout.trim(), 'Question one.');
-  const answer = await shell(withPreload('npx --no -- stack-exchange-markdown-retriever -a 1010'), workspace);
-  assert.equal(answer.code, 0, answer.output);
-  assert.match(answer.stdout, /^The answer is \[42\]/u);
-  const version = await shell('npx --no -- stack-exchange-markdown-retriever --version', workspace);
+  const tree = await mkdtemp(path.join(tmpdir(), 'fjf-consumer-bin-'));
+  try {
+    await writeFile(path.join(tree, 'a.json'), '{"a":1}');
+    // --no: never download; the command must come from the installed package. -- keeps the bin's flags away from npm exec.
+    const formatted = await shell(`npx --no -- format-json-files "${tree}"`, workspace);
+    assert.equal(formatted.code, 0, formatted.output);
+    assert.equal(await readFile(path.join(tree, 'a.json'), 'utf8'), '{\n    "a": 1\n}');
+    const checked = await shell(`npx --no -- format-json-files --check --indent 2 "${tree}"`, workspace);
+    assert.equal(checked.code, 1, checked.output);
+    assert.match(checked.stdout, /a\.json/u);
+  } finally {
+    await rm(tree, {recursive: true, force: true});
+  }
+
+  const version = await shell('npx --no -- format-json-files --version', workspace);
   assert.equal(version.code, 0, version.output);
   assert.match(version.stdout.trim(), /^\d+\.\d+\.\d+/u);
 });
 
 test('bun: the ES module fixture', {skip: unlessRuntime('bun')}, async () => {
-  const result = await run('bun', ['esm-node/index.js', server.base], workspace);
+  const result = await run('bun', ['esm-node/index.js'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.equal(result.stdout.trim(), 'esm-node ok');
 });
 
 test('bun: the CommonJS fixture', {skip: unlessRuntime('bun')}, async () => {
-  const result = await run('bun', ['cjs-node/index.js', server.base], workspace);
+  const result = await run('bun', ['cjs-node/index.js'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.equal(result.stdout.trim(), 'cjs-node ok');
 });
 
 test('bun: bunx runs the installed bin on Bun', {skip: unlessRuntime('bun')}, async () => {
   // --bun: run under Bun despite the node shebang; --no-install: never download. --help needs no request.
-  const result = await run('bunx', ['--bun', '--no-install', 'stack-exchange-markdown-retriever', '--help'], workspace);
+  const result = await run('bunx', ['--bun', '--no-install', 'format-json-files', '--help'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.match(result.stdout, /Usage/u);
 });
 
 // --node-modules-dir=manual: Deno resolves from the node_modules npm created, as Node does.
-const DENO_RUN = ['run', '--allow-net', '--allow-read', '--node-modules-dir=manual'];
+const DENO_RUN = ['run', '--allow-read', '--allow-write', '--allow-env', '--node-modules-dir=manual'];
 
 test('deno: the ES module fixture', {skip: unlessRuntime('deno')}, async () => {
-  const result = await run('deno', [...DENO_RUN, 'esm-node/index.js', server.base], workspace);
+  const result = await run('deno', [...DENO_RUN, 'esm-node/index.js'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.equal(result.stdout.trim(), 'esm-node ok');
 });
 
 test('deno: the bin', {skip: unlessRuntime('deno')}, async () => {
-  const result = await run('deno', [...DENO_RUN, 'node_modules/stack-exchange-markdown-retriever/dist/cli.mjs', '--help'], workspace);
+  const result = await run('deno', [...DENO_RUN, 'node_modules/format-json-files/dist/cli.mjs', '--help'], workspace);
   assert.equal(result.code, 0, result.output);
   assert.match(result.stdout, /Usage/u);
 });

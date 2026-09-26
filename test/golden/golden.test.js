@@ -8,7 +8,13 @@ changes on purpose is listed once, below, as a named exception with its changelo
 */
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {mkdtempSync, readdirSync, lstatSync, readFileSync, rmSync} from 'node:fs';
+import {
+  mkdtempSync,
+  readdirSync,
+  lstatSync,
+  readFileSync,
+  rmSync,
+} from 'node:fs';
 import {createRequire} from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -39,8 +45,12 @@ const CLI_EXCEPTIONS = {
   'cli-directory': {name: 'E7 exit 1 when bad.json is skipped', status: 1},
   'cli-invalid-file': {name: 'E7 exit 1 when bad.json is skipped', status: 1},
   'cli-relative-dot': {name: 'E7 exit 1 when bad.json is skipped', status: 1},
-  'cli-unknown-flag': {name: 'E7 --sort-keys is a flag, so "." is the path: one.json formatted, bad.json skipped', status: 1, stderrErrors: [], files: TREE_OF_ONE},
-  'cli-short-flag': {name: 'E7 -h is help', status: 0, stderrErrors: [], stdout: stdout => assert.match(stdout, /Usage/u)},
+  'cli-unknown-flag': {
+    name: 'E7 --sort-keys is a flag, so "." is the path: one.json formatted, bad.json skipped', status: 1, stderrErrors: [], files: TREE_OF_ONE,
+  },
+  'cli-short-flag': {
+    name: 'E7 -h is help', status: 0, stderrErrors: [], stdout: stdout => assert.match(stdout, /Usage/u),
+  },
   'cli-two-paths': {name: 'E7 every path is formatted', files: {'one.txt': '{\n    "a": 1\n}'}},
 };
 
@@ -52,7 +62,7 @@ const encodeBytes = buffer => {
 
 const substitute = (value, root) => {
   if (typeof value === 'string') {
-    return value.replaceAll('{{root}}', root);
+    return value.replaceAll('{{root}}', () => root);
   }
 
   return Array.isArray(value) ? value.map(item => substitute(item, root)) : value;
@@ -92,7 +102,9 @@ function inTree(entry, setup, run) {
     setup?.(root);
     const before = readTree(root);
     const outcome = run(root);
-    return {root, outcome, before, after: readTree(root)};
+    return {
+      root, outcome, before, after: readTree(root),
+    };
   } finally {
     for (const relative of Object.keys(trees.readonly)) {
       try {
@@ -115,7 +127,7 @@ function expectedFiles(entry, fileOverrides = {}) {
     }
 
     const name = relative.split('/').at(-1);
-    let bytes = recorded.bytes;
+    let {bytes} = recorded;
     if (recorded.written && LOSSY_FILES.has(name)) {
       bytes = encodeBytes(originalBytes(tree[relative]));
     } else if (FORMATTED_WITH_BOM_DROPPED[name] !== undefined && entry.tree === 'invalid') {
@@ -147,8 +159,8 @@ function assertFiles(entry, run, fileOverrides) {
 // Paths 1.0.6 reported as skipped, from its log lines.
 function skippedBy106(lines) {
   return lines.flatMap(line => {
-    const match = /^Error processing target file: (.*), skipping\.$/u.exec(line);
-    return match ? [match[1]] : [];
+    const match = /^Error processing target file: (?<file>.*), skipping\.$/u.exec(line);
+    return match ? [match.groups.file] : [];
   });
 }
 
@@ -166,9 +178,14 @@ for (const {name, lib} of builds) {
         const run = inTree(entry, setup, root => {
           const saved = {log: console.log, error: console.error, warn: console.warn};
           const previousDirectory = process.cwd();
-          console.log = (...items) => printed.push(items.join(' '));
+
+          console.log = (...items) => {
+            printed.push(items.join(' '));
+          };
+
           console.error = console.log;
           console.warn = console.log;
+
           let report;
           try {
             if (entry.cwd) {
@@ -203,7 +220,7 @@ for (const {name, lib} of builds) {
 
           for (const [index, skippedPath] of skipped.entries()) {
             const baseName = skippedPath.split('/').at(-1);
-            const reason = report.skipped[index].reason;
+            const {reason} = report.skipped[index];
             const known = skippedBy106(entry.stdout).includes(skippedPath) || LOSSY_FILES.has(baseName);
             assert.ok(known, `${skippedPath} (${reason}) was not skipped by 1.0.6 and is no named exception`);
           }

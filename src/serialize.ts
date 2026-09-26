@@ -3,6 +3,8 @@
 // writing. Everything else matches JSON.stringify's output for parsed JSON (the unit tests compare the two on unsorted input).
 // Keys sort by UTF-16 code unit (Array.prototype.sort's default); arrays keep their order.
 
+// JSON's null is a value here, not a missing one.
+// eslint-disable-next-line @typescript-eslint/no-restricted-types
 type Json = null | boolean | number | string | Json[] | {[key: string]: Json};
 
 export function stringifySorted(value: Json, indent: string): string {
@@ -19,14 +21,10 @@ function write(value: Json, indent: string, current: string): string {
   const close = indent === '' ? '' : `\n${current}`;
   const separator = indent === '' ? ',' : `,\n${inner}`;
   if (Array.isArray(value)) {
-    if (value.length === 0) {
-      return '[]';
-    }
-
-    return `[${open}${value.map(item => write(item, indent, inner)).join(separator)}${close}]`;
+    return value.length === 0 ? '[]' : `[${open}${value.map(item => write(item, indent, inner)).join(separator)}${close}]`;
   }
 
-  const entries = Object.entries(value).sort(([a], [b]) => (a < b ? -1 : (a > b ? 1 : 0)));
+  const entries = Object.entries(value).toSorted(([a], [b]) => (a < b ? -1 : (a > b ? 1 : 0)));
   if (entries.length === 0) {
     return '{}';
   }

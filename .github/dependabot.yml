@@ -18,7 +18,7 @@ updates:
       # Remove this rule when xo supports TypeScript 7 (ai-docs/HANDOFF.md, standing work).
       - dependency-name: typescript
         update-types: ['version-update:semver-major']
-      # @types/node stays on Node 24, the line the package builds on (the library itself needs no Node types); bump it by hand.
+      # @types/node stays on Node 24, the line the package builds on; the public declaration files need no Node types. Bump it by hand.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
 

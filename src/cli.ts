@@ -43,7 +43,7 @@ function readOptions(values: Record<string, string | boolean | string[] | undefi
   };
   if (typeof values.indent === 'string') {
     const indent = values.indent === 'tab' ? '\t' : Number(values.indent);
-    if (indent !== '\t' && (values.indent.trim() === '' || !Number.isInteger(indent) || indent < 0 || indent > 10)) {
+    if (indent !== '\t' && (values.indent.trim() === '' || !Number.isSafeInteger(indent) || indent < 0 || indent > 10)) {
       throw new TypeError(`--indent takes 0 to 10 or "tab", not ${JSON.stringify(values.indent)}`);
     }
 
@@ -127,7 +127,7 @@ function main(argv: string[]): number {
       const {name, message} = error as Error;
       // The error line is 1.0.6's (the golden capture pins it); the path follows on its own line.
       console.error(`${name}: ${message}`);
-      if (target) {
+      if (target !== '') {
         console.error(`  path: ${target}`);
       }
 

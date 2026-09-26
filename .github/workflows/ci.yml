@@ -1,6 +1,6 @@
-# Every push to master and every pull request: lint and types, the package's shape and coverage, the suites (the golden cases of the old version,
-# if any) and the consumer fixtures on each Node line (Linux) and on Windows and macOS, and the
-# fixtures under Bun and Deno.
+# Every push to master and every pull request: lint and types, the package's shape and coverage, the suites (the golden cases
+# of 1.0.6 included) and the consumer fixtures on each Node line (Linux) and on Windows and macOS, and the fixtures under Bun
+# and Deno. The link and file-mode tests that Windows cannot run without developer mode run on Linux and macOS.
 # The ruleset on master requires the final `ci` job, which passes only when every other job passed.
 name: ci
 

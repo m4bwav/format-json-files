@@ -13,6 +13,8 @@ export type FormatSettings = {
 
 export type FormatOutcome = {output: Uint8Array} | {reason: string};
 
+// ignoreBOM keeps the mark in the text, so the caller decides (E2); the option's name is the platform's.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const decoder = new TextDecoder('utf-8', {fatal: true, ignoreBOM: true});
 const encoder = new TextEncoder();
 

@@ -43,6 +43,8 @@ tsdown needs Node 22.18+ or 24 to build; the built output and the tests run on N
 
 ## Layout and traps
 
+- `src/format-json-files.ts` is the walk and the argument checks (1.0.6's order); `src/format.ts` turns one file's bytes into formatted bytes or a skip reason; `src/scan.ts` is the lossless check (plain integers must be exact doubles, no -0, no overflow or underflow, no duplicate keys); `src/serialize.ts` writes sorted keys; `src/index.ts` is the ESM entry, `src/require.ts` the CommonJS one (the function itself, with a namespace carrying the types), `src/cli.ts` the bin. Only `format-json-files.ts` and `cli.ts` touch the filesystem or the process.
+- The default output must stay `JSON.stringify(JSON.parse(text), null, 4)` without a final newline: the one known dependent (cdlib/cdlib-ui) keeps its files in exactly that format, and 2.x writes nothing to them.
 - `test/golden/1.0.6.json` holds one case per line: the tree it ran on (from `capture-fixtures.cjs`), the arguments with `{{root}}` for the tree's path, what the call returned or threw, what it printed, and every file's bytes afterwards with `written` (its mtime moved from the fixed 2001-01-01 stamp). Cases listing a link under `unavailable` ran without it (Windows refuses file symbolic links without developer mode).
 - Tests import `dist/`, never `src/`, and run against both builds (`test/helpers/builds.js`). The npm scripts name every test file, because plain `node --test` would also run the fixtures and the capture scripts.
 - `xo --fix` rewrites code: stage your work first and read the diff it makes to `src/`.

@@ -1,6 +1,11 @@
 // The walk (plan D1, D3, D6, D7). The argument checks, the file and directory tests (lstat) and the file-name rule are
 // 1.0.6's, in 1.0.6's order, so the golden capture's throws and file choices hold.
-import {lstatSync, readdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {
+  lstatSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import path from 'node:path';
 import {formatBytes, type Eol, type FormatSettings} from './format.js';
 
@@ -59,20 +64,26 @@ type Settings = FormatSettings & {check: boolean; ignore: ReadonlySet<string>};
 
 const defaultIgnore = ['node_modules', '.git'];
 
-function readSettings(options: Options | undefined): Settings {
-  if (options === undefined || options === null) {
-    options = {};
+function readIndent(indent: unknown): string {
+  if (indent === '\t') {
+    return '\t';
   }
+
+  if (!Number.isSafeInteger(indent) || (indent as number) < 0 || (indent as number) > 10) {
+    throw new TypeError(String.raw`The indent option must be an integer from 0 to 10, or '\t'`);
+  }
+
+  return ' '.repeat(indent as number);
+}
+
+function readSettings(options: Options | undefined): Settings {
+  options ??= {};
 
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object');
   }
 
   const {indent = 4, sortKeys = false, check = false, finalNewline = false, eol = 'lf', ignore = defaultIgnore} = options;
-  if (indent !== '\t' && !(Number.isInteger(indent) && indent >= 0 && indent <= 10)) {
-    throw new TypeError('The indent option must be an integer from 0 to 10, or \'\\t\'');
-  }
-
   for (const [name, value] of Object.entries({sortKeys, check, finalNewline})) {
     if (typeof value !== 'boolean') {
       throw new TypeError(`The ${name} option must be a boolean`);
@@ -83,12 +94,12 @@ function readSettings(options: Options | undefined): Settings {
     throw new TypeError('The eol option must be \'lf\', \'crlf\' or \'auto\'');
   }
 
-  if (!Array.isArray(ignore) || !ignore.every(name => typeof name === 'string')) {
+  if (!Array.isArray(ignore) || ignore.some(name => typeof name !== 'string')) {
     throw new TypeError('The ignore option must be an array of directory names');
   }
 
   return {
-    indent: indent === '\t' ? '\t' : ' '.repeat(indent),
+    indent: readIndent(indent),
     sortKeys,
     check,
     finalNewline,
@@ -97,7 +108,7 @@ function readSettings(options: Options | undefined): Settings {
   };
 }
 
-function isAJsonFileName(fileName: string): boolean {
+function isJsonFileName(fileName: string): boolean {
   return fileName.toLowerCase().endsWith('.json');
 }
 
@@ -154,7 +165,7 @@ function formatDirectory(directoryPath: string, settings: Settings, report: Repo
       if (!settings.ignore.has(entry)) {
         formatDirectory(filename, settings, report);
       }
-    } else if (isAJsonFileName(filename)) {
+    } else if (isJsonFileName(filename)) {
       if (stat.isSymbolicLink()) {
         // 1.0.6 wrote through links, to wherever they pointed (E6). A link to a directory was never entered.
         report.skipped.push({path: filename, reason: 'symbolic link'});
@@ -183,6 +194,8 @@ Error('Invalid path') when it is neither a file nor a directory. Problems with s
 report's `skipped` list.
 */
 export function formatJsonFiles(targetPath: string, options?: Options): Report {
+  // 1.0.6 tested truthiness: an empty string, 0, NaN, false, null and undefined all get this error (golden cases arg-*).
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (!targetPath) {
     throw new Error('Path argument not set');
   }

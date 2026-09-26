@@ -1,42 +1,30 @@
-// A consumer written as an ES module: default and named imports of the installed package. Runs under Node, Bun and Deno.
-// Its argument is the base URL of the fixture server the runner started (test/golden/fixture-server.cjs); fetch is replaced
-// with one that sends the package's https://api.stackexchange.com requests there, through this runtime's own fetch.
+// A consumer written as an ES module: default and named imports of the installed package, on a temporary tree it makes and
+// removes itself. Runs under Node, Bun and Deno.
 import assert from 'node:assert/strict';
-import process from 'node:process';
-import retriever, {retrieveMarkdown, StackExchangeError} from 'stack-exchange-markdown-retriever';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import formatJsonFiles, {formatJsonFiles as named} from 'format-json-files';
 
-const base = process.argv[2];
-const realFetch = fetch;
-globalThis.fetch = (input, init) => {
-  const url = new URL(String(input));
-  assert.equal(url.origin, 'https://api.stackexchange.com');
-  return realFetch(`${base}${url.pathname}${url.search}`, init);
-};
-
-assert.equal(typeof retrieveMarkdown, 'function');
-assert.equal(retriever.retrieveMarkdown, retrieveMarkdown, 'the default export holds the named export');
+assert.equal(typeof formatJsonFiles, 'function');
+assert.equal(named, formatJsonFiles, 'the default export is the named export');
 if (typeof import.meta.resolve === 'function') {
-  assert.match(import.meta.resolve('stack-exchange-markdown-retriever'), /\/dist\/index\.mjs$/u, 'import resolves to the ESM build');
+  assert.match(import.meta.resolve('format-json-files'), /\/dist\/index\.mjs$/u, 'import resolves to the ESM build');
 }
 
-assert.equal(await retrieveMarkdown({entityId: 1}), 'Question one.');
-assert.match(await retrieveMarkdown({entityId: 1010, isForAnswer: true, site: 'scifi'}), /^The answer is \[42\]/u);
-assert.equal(await retrieveMarkdown({entityId: 404}), null);
-assert.equal(await retrieveMarkdown({entityId: 9006}), 'gzip without the header');
-await assert.rejects(retrieveMarkdown({entityId: 9001}), StackExchangeError);
-await assert.rejects(retrieveMarkdown({entityId: 9011, timeout: 200}), {name: 'TimeoutError'});
-await assert.rejects(retrieveMarkdown({entityId: 'abc'}), TypeError);
-
-// The callback form: (markdown, err), always asynchronous.
-let isReturned = false;
-const [markdown, error] = await new Promise(resolve => {
-  retriever.retrieveMarkdown({entityId: 2}, (...arguments_) => {
-    assert.ok(isReturned, 'the callback runs after retrieveMarkdown returns');
-    resolve(arguments_);
-  });
-  isReturned = true;
-});
-assert.equal(markdown, 'Question two.');
-assert.equal(error, null);
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'fjf-consumer-esm-'));
+try {
+  fs.writeFileSync(path.join(root, 'b.json'), '{"b":1,"a":[2]}');
+  fs.writeFileSync(path.join(root, 'id.json'), '{"id":12345678901234567890}');
+  const checked = formatJsonFiles(root, {check: true, sortKeys: true, indent: 2});
+  assert.equal(checked.changed.length, 1);
+  assert.equal(fs.readFileSync(path.join(root, 'b.json'), 'utf8'), '{"b":1,"a":[2]}', 'check mode writes nothing');
+  const report = formatJsonFiles(root, {sortKeys: true, indent: 2, finalNewline: true});
+  assert.equal(fs.readFileSync(path.join(root, 'b.json'), 'utf8'), '{\n  "a": [\n    2\n  ],\n  "b": 1\n}\n');
+  assert.deepEqual(report.skipped.map(item => [path.basename(item.path), item.reason]), [['id.json', 'number cannot be kept exactly: 12345678901234567890']]);
+  assert.equal(fs.readFileSync(path.join(root, 'id.json'), 'utf8'), '{"id":12345678901234567890}');
+} finally {
+  fs.rmSync(root, {recursive: true, force: true});
+}
 
 console.log('esm-node ok');

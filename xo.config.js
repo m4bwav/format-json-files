@@ -32,10 +32,14 @@ const xoConfig = [
     },
   },
   {
-    // The CommonJS entry merges a namespace into the exported function so `export =` still carries the public types (plan D2).
+    // The CommonJS entry merges a namespace into the exported function so `export =` still carries the public types, re-exports
+    // the function as `default` inside that namespace, and attaches `.default` and `.formatJsonFiles` at load: that is the
+    // module's whole purpose (plan D2).
     files: ['src/require.ts'],
     rules: {
       '@typescript-eslint/no-namespace': 'off',
+      'unicorn/no-named-default': 'off',
+      'unicorn/no-top-level-side-effects': 'off',
     },
   },
   {

@@ -34,6 +34,9 @@ const LOSSY_FILES = new Set(['big-integer.json', 'duplicate-keys.json', 'negativ
 // E2 (CHANGELOG: Changed): a UTF-8 byte order mark is dropped and the file formatted.
 const FORMATTED_WITH_BOM_DROPPED = {'bom.json': '{\n    "a": 1\n}'};
 // E5 (CHANGELOG: Changed, breaking): the walk does not enter node_modules or .git by default.
+// E6 (CHANGELOG: Changed): the walk reports a symbolic link named *.json and never writes through it. The capture ran on
+// Windows, where file links could not be made, so on Linux and macOS the link exists here and nowhere in the recording.
+const SKIPPED_LINK = 'symbolic link';
 const isIgnoredByDefault = relative => /^(?:node_modules|\.git)\//u.test(relative);
 // E4 (CHANGELOG: Changed, breaking): the library logs nothing and returns a report instead of undefined; the bin prints
 // skipped files on stderr, so nothing reaches stdout unless asked for (help, version, --check).
@@ -221,7 +224,7 @@ for (const {name, lib} of builds) {
           for (const [index, skippedPath] of skipped.entries()) {
             const baseName = skippedPath.split('/').at(-1);
             const {reason} = report.skipped[index];
-            const known = skippedBy106(entry.stdout).includes(skippedPath) || LOSSY_FILES.has(baseName);
+            const known = skippedBy106(entry.stdout).includes(skippedPath) || LOSSY_FILES.has(baseName) || reason === SKIPPED_LINK;
             assert.ok(known, `${skippedPath} (${reason}) was not skipped by 1.0.6 and is no named exception`);
           }
         } else {

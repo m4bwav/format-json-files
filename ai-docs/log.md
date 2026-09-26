@@ -34,3 +34,10 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 - xo --fix traps met again: it turned the JSON `null` type into `undefined` (restored, rule off with a reason) and turned quoted number tokens in a test table into number literals (the table is now string pairs).
 - actionlint 1.7.12 clean, check-workflow-shell.py clean, zizmor --offline no findings. check-readme-images.mjs: npm badges ok, the CI badge 404s until ci.yml is on master.
 - Dependent check: 2.x bin on cdlib/cdlib-ui's 20 sample-data files (downloaded to the scratchpad): exit 0, md5 of every file unchanged, --check exit 0.
+
+## [2026-09-26] add | Phase 2 end: pull request, CI
+- Fresh clone of v2 in the scratchpad: npm ci (0 vulnerabilities), lint, typecheck, npm test 137 pass 4 skipped, check clean.
+- delete-branch-on-merge on (gh repo edit). Pull request #2 opened: https://github.com/m4bwav/format-json-files/pull/2
+- First CI run 36277483722 failed: (1) lint: unicorn/no-named-default and no-top-level-side-effects in src/require.ts, which local xo had not reported because its cache (node_modules/.cache/xo-linter) predated the edit; (2) golden dir-links on every runner: the runners can create file links, so 2.x reported inside/file-link.json as "symbolic link", which the capture (Windows, no link) never saw. Fixed with the E6 named exception in the golden test and a require.ts lint override with reasons.
+- CI run 36277589680: every job green (lint, package shape and coverage, Node 20/22/24/26 Linux, Windows, macOS, Bun, Deno, ci).
+- Phase 3 review subagent running in the background (read-only).

@@ -6,7 +6,7 @@
 Phases 0 to 2 done 2026-09-26. Branch v2 holds the 2.0.0 rewrite; pull request #2 is open (https://github.com/m4bwav/format-json-files/pull/2) with CI green (run 36277589680). Golden suite 78 of 78 against 1.0.6's recording, canary logged, golden files untouched since 7107861. master still holds 1.0.6. Evidence in `ai-docs/log.md`.
 
 ## In progress
-Phase 3: an independent read-only review ran in the background; its findings are fixed or answered on the branch and summarised on the pull request (see the log). Then the stop: Mark reviews pull request #2.
+Phase 3 done: 7 review findings fixed (see the log and the comment on pull request #2), CI green (run 36277900880). Stopped for Mark's review of pull request #2.
 
 ## Decisions made this session
 - Mark accepted every recommendation of the plan (D1-D16, E1-E8).

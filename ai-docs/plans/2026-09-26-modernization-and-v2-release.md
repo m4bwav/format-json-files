@@ -15,7 +15,7 @@ The plan for taking format-json-files from 1.0.6 (2018) to a verified 2.0.0, run
 
 ## Status
 
-Active. Phase 1 ruled 2026-09-26: Mark accepted every recommendation. Phase 2 (rewrite on branch v2) in progress.
+Active. Phases 2 and 3 done 2026-09-26: pull request #2 open, CI green, review findings fixed. Waiting for Mark's review of the pull request.
 
 ## Goal
 
@@ -123,13 +123,13 @@ export {formatJsonFiles};
 ### Phase 1: plan
 - [x] This plan and the decision record. **Stop**: Mark rules on the table.
 ### Phase 2: rewrite on branch v2
-- [ ] Remove the dead files; add the templates; deny dev-only install scripts
-- [ ] Golden test first, green on the first build; canary: a planted line in src/ turns it red, reverted, green (both logged); golden files unchanged since 7107861 (`check-golden-untouched.sh`); then src/, the rest of test/, README, CHANGELOG, SECURITY.md, AGENTS.md
-- [ ] Verified on Node 20, 22, 24, 26 and from a fresh clone (log)
-- [ ] Workflows and Dependabot added, actionlint and check-workflow-shell clean; delete-branch-on-merge on
-- [ ] Pushed; pull request opened with a "For review" list. **Stop.**
+- [x] Remove the dead files; add the templates; deny dev-only install scripts
+- [x] Golden test first, green on the first build; canary: a planted line in src/ turns it red, reverted, green (both logged); golden files unchanged since 7107861 (`check-golden-untouched.sh`); then src/, the rest of test/, README, CHANGELOG, SECURITY.md, AGENTS.md
+- [x] Verified on Node 20, 22, 24, 26 and from a fresh clone (log)
+- [x] Workflows and Dependabot added, actionlint and check-workflow-shell clean; delete-branch-on-merge on
+- [x] Pushed; pull request opened with a "For review" list. **Stop.**
 ### Phase 3: review
-- [ ] Independent read-only review (prompts/review-subagent.md); findings fixed or answered; summary on the pull request
+- [x] Independent read-only review (prompts/review-subagent.md); findings fixed or answered; summary on the pull request
 ### Phase 4: CI, settings, merge, cleanup
 - [ ] CI green (run id); ruleset on master before the merge; merge after Mark's review (read the SHA and method back)
 - [ ] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted

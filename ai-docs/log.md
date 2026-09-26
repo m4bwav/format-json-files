@@ -14,3 +14,6 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 ## [2026-09-26] add | Phase 1: plan and decision record
 - ai-docs/plans/2026-09-26-modernization-and-v2-release.md (D1-D16, exceptions E1-E8) and ai-docs/decisions/2026-09-26-v2-promise-refuse-lossy-files-keep-1.0.6-bytes.md (proposed). Stop: waiting for Mark's rulings.
 ## [2026-09-26] index | rebuilt (3 entries)
+
+## [2026-09-26] update | Plan ruled
+- Mark accepted every recommendation in the decisions table (D1-D16, E1-E8). Decision record status accepted. Phase 2 starts on branch v2.

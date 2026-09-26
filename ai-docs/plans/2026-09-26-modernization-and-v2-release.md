@@ -15,7 +15,7 @@ The plan for taking format-json-files from 1.0.6 (2018) to a verified 2.0.0, run
 
 ## Status
 
-Active. Phase 1 (plan) written 2026-09-26; waiting for Mark's rulings on the decisions table. Silence means the recommendations stand.
+Active. Phase 1 ruled 2026-09-26: Mark accepted every recommendation. Phase 2 (rewrite on branch v2) in progress.
 
 ## Goal
 

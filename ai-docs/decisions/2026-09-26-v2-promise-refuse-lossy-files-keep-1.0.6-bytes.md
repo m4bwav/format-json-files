@@ -1,7 +1,7 @@
 ---
 title: "v2 keeps 1.0.6's bytes by default and refuses files it cannot rewrite exactly"
 kind: decision
-status: proposed
+status: accepted
 date: 2026-09-26
 verified: 2026-09-26
 stale_after: never

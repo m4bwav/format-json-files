@@ -15,7 +15,7 @@ The plan for taking format-json-files from 1.0.6 (2018) to a verified 2.0.0, run
 
 ## Status
 
-Active. Phase 1 ruled 2026-09-26: Mark accepted every recommendation. Phase 2 (rewrite on branch v2) in progress.
+Active. Phases 2 and 3 done 2026-09-26: pull request #2 open, CI green, review findings fixed. Waiting for Mark's review of the pull request.
 
 ## Goal
 
@@ -62,7 +62,7 @@ Active. Phase 1 ruled 2026-09-26: Mark accepted every recommendation. Phase 2 (r
 |---|---|---|---|---|
 | D1 | The compatibility promise | For every golden case, 2.x with default options chooses the same files, writes the same bytes and throws the same argument errors (class and message) as 1.0.6, except the named exceptions E1 to E8 below, each listed once in the golden test with its changelog line. A later fix that would change a default result goes behind an option. | The dependent's files are exactly 1.0.6's output; the golden file proves the promise per case. | Promise only "valid JSON is formatted", with no byte promise (cheaper, but the dependent would see churn from any change). |
 | D2 | Export shape | Default export `formatJsonFiles(path, options?)` plus the same function as the named export `formatJsonFiles`; `require()` returns the function (the replace-string-at-position recipe: two tsdown configs, `cjsDefault`); types for both; `exports` map with `import`, `require`, `./package.json`; bin `format-json-files` at dist/cli.mjs. | The old README's `require()` line must keep working. | ESM only (breaks every CommonJS caller). |
-| D3 | Behaviour at the edges (named exceptions) | E1 lossy files refused: integers that are not exact doubles, duplicate keys, -0, overflow to Infinity, non-zero numbers that underflow to 0, invalid UTF-8 (items 1 to 4). E2 BOM stripped, file formatted, written without the BOM (5). E3 unchanged files are not written (7). E4 the library returns a report and logs nothing (6). E5 node_modules and .git skipped by default (8). E6 links skipped by the walk (9). E7 CLI: stderr, exit 1 on any skip, several paths, strict flags, new help and version text (10). E8 UTF-16 files: still skipped, now with the reason "not UTF-8". Everything else keeps 1.0.6's bytes, including item 12. | Each is either data loss or noise; none changes the bytes of a file 1.0.6 formatted without loss, except E5. | Keep the BOM when writing (E2); keep walking node_modules (E5) and make skipping an option. |
+| D3 | Behaviour at the edges (named exceptions) | E1 lossy files refused: numbers written as plain integers that are not exact doubles (numbers with a fraction or exponent are floats, as always), duplicate keys, -0, overflow to Infinity, non-zero numbers that underflow to 0, invalid UTF-8 (items 1 to 4). E2 BOM stripped, file formatted, written without the BOM (5). E3 unchanged files are not written (7). E4 the library returns a report and logs nothing (6). E5 node_modules and .git skipped by default (8). E6 links skipped by the walk (9). E7 CLI: stderr, exit 1 on any skip, several paths, strict flags, new help and version text (10). E8 UTF-16 files: still skipped, now with the reason "not UTF-8". Everything else keeps 1.0.6's bytes, including item 12. | Each is either data loss or noise; none changes the bytes of a file 1.0.6 formatted without loss, except E5. | Keep the BOM when writing (E2); keep walking node_modules (E5) and make skipping an option. |
 | D4 | Whether a major is warranted | Yes: 2.0.0. The return value, the refusals, the CLI exit code, the node_modules default and the Node floor all break something. | A minor would hide the exit-code change from the dependent's CI. A patch could only fix the BOM and the stdout noise, not the data loss. | 1.1.0 with the refusals behind an option (keeps the data loss as the default). |
 | D5 | Runtime dependencies | None. meow goes for `node:util` `parseArgs` (stable since Node 20). The lossless check is a small JSON scanner in `src/` (about 150 lines). | Zero dependencies, three runtime alerts gone. | A parser dependency that keeps number text (json-bigint, lossless-json): adds a dependency for one check. |
 | D6 | Names: kept, added | Kept: the default export and its argument errors. Added, each with its reason: `indent` (number or `'\t'`, default 4; teams use 2 or tabs), `sortKeys` (default false; issue #1), `check` (write nothing, report what would change; for CI), `finalNewline` (default false; editors and POSIX tools expect one, and 1.0.6 fights them), `eol` (`'lf'` default, `'crlf'`, or `'auto'` to keep each file's; Windows repositories otherwise churn), `ignore` (directory names the walk skips, default `['node_modules', '.git']`; `[]` walks everything like 1.0.6). CLI: `--indent`, `--sort-keys`, `--check`, `--final-newline`, `--eol`, `--ignore` (repeatable), `--no-ignore`, `--help`, `--version`. | Each answers a real use; defaults keep 1.0.6's output. | Trim `eol` and `finalNewline` to a later minor. |
@@ -123,13 +123,13 @@ export {formatJsonFiles};
 ### Phase 1: plan
 - [x] This plan and the decision record. **Stop**: Mark rules on the table.
 ### Phase 2: rewrite on branch v2
-- [ ] Remove the dead files; add the templates; deny dev-only install scripts
-- [ ] Golden test first, green on the first build; canary: a planted line in src/ turns it red, reverted, green (both logged); golden files unchanged since 7107861 (`check-golden-untouched.sh`); then src/, the rest of test/, README, CHANGELOG, SECURITY.md, AGENTS.md
-- [ ] Verified on Node 20, 22, 24, 26 and from a fresh clone (log)
-- [ ] Workflows and Dependabot added, actionlint and check-workflow-shell clean; delete-branch-on-merge on
-- [ ] Pushed; pull request opened with a "For review" list. **Stop.**
+- [x] Remove the dead files; add the templates; deny dev-only install scripts
+- [x] Golden test first, green on the first build; canary: a planted line in src/ turns it red, reverted, green (both logged); golden files unchanged since 7107861 (`check-golden-untouched.sh`); then src/, the rest of test/, README, CHANGELOG, SECURITY.md, AGENTS.md
+- [x] Verified on Node 20, 22, 24, 26 and from a fresh clone (log)
+- [x] Workflows and Dependabot added, actionlint and check-workflow-shell clean; delete-branch-on-merge on
+- [x] Pushed; pull request opened with a "For review" list. **Stop.**
 ### Phase 3: review
-- [ ] Independent read-only review (prompts/review-subagent.md); findings fixed or answered; summary on the pull request
+- [x] Independent read-only review (prompts/review-subagent.md); findings fixed or answered; summary on the pull request
 ### Phase 4: CI, settings, merge, cleanup
 - [ ] CI green (run id); ruleset on master before the merge; merge after Mark's review (read the SHA and method back)
 - [ ] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted

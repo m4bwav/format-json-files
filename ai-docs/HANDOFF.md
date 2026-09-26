@@ -3,18 +3,20 @@
 <!-- Keep under 50 lines. Replace, never append. Written at the end of a work session so the next one starts without re-deriving state. -->
 
 ## Current state
-Phase 0 done 2026-09-26 (commit 7107861): survey, baseline and the golden capture of the published 1.0.6 (`test/golden/1.0.6.json`, 45 cases; frozen from that commit). Phase 1 plan written: `ai-docs/plans/2026-09-26-modernization-and-v2-release.md` with decisions D1-D16 and exceptions E1-E8, and the decision record in `ai-docs/decisions/`. master still holds the 1.0.6 code.
+Phases 0 to 2 done 2026-09-26. Branch v2 holds the 2.0.0 rewrite; pull request #2 is open (https://github.com/m4bwav/format-json-files/pull/2) with CI green (run 36277589680). Golden suite 78 of 78 against 1.0.6's recording, canary logged, golden files untouched since 7107861. master still holds 1.0.6. Evidence in `ai-docs/log.md`.
 
 ## In progress
-Stopped at the plan review. Mark rules on the decisions table; silence means the recommendations stand.
+Phase 3 done: 7 review findings fixed (see the log and the comment on pull request #2), CI green (run 36277900880). Stopped for Mark's review of pull request #2.
 
 ## Decisions made this session
-Proposed, not yet ruled: default output byte-identical to 1.0.6; lossy files refused and reported; library returns a report; CLI on parseArgs with stderr and exit 1 on skips; node_modules and .git skipped by default; options indent, sortKeys, check, finalNewline, eol, ignore.
+- Mark accepted every recommendation of the plan (D1-D16, E1-E8).
+- The lossless check requires exactness only for numbers written as plain integers; fraction and exponent forms are floats (plan D3).
+- The CLI keeps 1.0.6's exact error line and prints the path on a second line.
 
 ## Dead ends hit
-- Bash heredocs turn backslashes into nothing; a regex in the capture script had to be fixed with Python and chr(92).
-- The first capture was 2.4 MB, then 16 MB (a 2000-deep array formats into a huge file); the depth tree now holds only a 10000-deep array (stringify overflows, file untouched) and shapes a 40-deep one.
-- Windows refuses file symbolic links without developer mode (EPERM); junctions work. File-link behaviour is left to 2.x's functional tests on Linux and macOS.
+- tsdown's declaration bundler: `export =` with a namespace aliasing types under the same names wrote `type FormatOptions = FormatOptions`; direct property assignment on the function wrote `var formatJsonFiles: typeof formatJsonFiles` inside the namespace (TS2502). Fixed with short internal type names and the DefinitelyTyped `export {formatJsonFiles as default, formatJsonFiles}` form.
+- Local xo passed while CI failed: xo's cache in node_modules/.cache/xo-linter hid errors in an edited file. Clear it before pushing.
+- xo --fix changed the JSON `null` type to `undefined` and quoted number tokens in a test table into number literals.
 
 ## Next single action
-After Mark's ruling: Phase 2 on branch v2, starting with test/golden/golden.test.js against the first build.
+After Mark's pull request review: Phase 4 (ruleset before the merge, merge, then the go list: webhook 72197148, tag ruleset, settings, scanning, private reporting, workflow permissions, branch v2).

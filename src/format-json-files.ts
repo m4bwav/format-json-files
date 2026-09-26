@@ -77,10 +77,10 @@ function readIndent(indent: unknown): string {
 }
 
 function readSettings(options: Options | undefined): Settings {
-  options ??= {};
-
-  if (typeof options !== 'object') {
-    throw new TypeError('Options must be an object');
+  // 1.0.6 took one argument and ignored the rest, so `paths.forEach(formatJsonFiles)` (which passes an index) still works:
+  // anything that is not an object means the defaults.
+  if (typeof options !== 'object' || options === null) {
+    options = {};
   }
 
   const {indent = 4, sortKeys = false, check = false, finalNewline = false, eol = 'lf', ignore = defaultIgnore} = options;
@@ -126,7 +126,15 @@ function formatFile(filePath: string, settings: Settings, report: Report): void 
     return;
   }
 
-  const outcome = formatBytes(bytes, settings);
+  let outcome;
+  try {
+    outcome = formatBytes(bytes, settings);
+  } catch (error) {
+    // A problem with one file never stops the walk (the API's promise); nothing is known to reach here.
+    report.skipped.push({path: filePath, reason: `cannot format: ${String(error)}`});
+    return;
+  }
+
   if ('reason' in outcome) {
     report.skipped.push({path: filePath, reason: outcome.reason});
     return;
@@ -160,7 +168,15 @@ function formatDirectory(directoryPath: string, settings: Settings, report: Repo
 
   for (const entry of entries) {
     const filename = path.join(directoryPath, entry);
-    const stat = lstatSync(filename);
+    let stat;
+    try {
+      stat = lstatSync(filename);
+    } catch (error) {
+      // Removed or made unreadable between readdir and lstat.
+      report.skipped.push({path: filename, reason: `cannot read: ${describeError(error)}`});
+      continue;
+    }
+
     if (stat.isDirectory()) {
       if (!settings.ignore.has(entry)) {
         formatDirectory(filename, settings, report);

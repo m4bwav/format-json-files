@@ -17,8 +17,8 @@ const HELP = `
     --check              Write nothing; list the files that would change
     --final-newline      End each file with a line break
     --eol <lf|crlf|auto> Line breaks to write (default lf; auto keeps each file's)
-    --ignore <name>      A directory name not to enter; repeatable
-                         (default node_modules and .git)
+    --ignore <name>      A directory name not to enter; repeatable. Replaces
+                         the default list (node_modules and .git)
     --no-ignore          Enter every directory, node_modules and .git too
     -h, --help           Show this help
     -v, --version        Show the version

@@ -4,7 +4,8 @@ links, and files that cannot be written. Link cases run where the OS lets a norm
 developer mode for file links; CI's Linux and macOS jobs always run them).
 */
 import assert from 'node:assert/strict';
-import {chmodSync, symlinkSync} from 'node:fs';
+import fs, {chmodSync, symlinkSync} from 'node:fs';
+import {syncBuiltinESMExports} from 'node:module';
 import path from 'node:path';
 import process from 'node:process';
 import {describe, test} from 'node:test';
@@ -110,6 +111,23 @@ for (const {name, lib} of builds) {
         tree.remove();
       });
       assert.deepEqual(formatJsonFiles('x').changed, [path.join('x', 'a.json')]);
+    });
+
+    test('an entry that disappears between readdir and lstat is reported and the walk goes on', t => {
+      const tree = makeTree({'a.json': RAW, 'b.json': RAW});
+      t.after(tree.remove);
+      // Simulate the race: readdir lists a name that is gone by the time the walk looks at it. syncBuiltinESMExports
+      // carries the mock into the ESM build's named import.
+      const realReaddir = fs.readdirSync;
+      t.mock.method(fs, 'readdirSync', (...arguments_) => [...realReaddir(...arguments_), 'gone.json']);
+      syncBuiltinESMExports();
+      t.after(() => {
+        t.mock.restoreAll();
+        syncBuiltinESMExports();
+      });
+      const report = formatJsonFiles(tree.root);
+      assert.deepEqual(report.skipped.map(item => [path.basename(item.path), item.reason]), [['gone.json', 'cannot read: ENOENT']]);
+      assert.equal(report.changed.length, 2);
     });
 
     test('a file that cannot be written is reported and the walk goes on', {skip: process.getuid?.() === 0 && 'root ignores file modes'}, t => {

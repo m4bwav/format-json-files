@@ -9,10 +9,26 @@
 // The walk is iterative, so nesting depth cannot overflow the stack.
 
 const numberPattern = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:e[+-]?\d+)?/iuy;
-const stringPattern = /"(?:[^"\\]|\\.)*"/uy;
-const maxSafe = BigInt(Number.MAX_SAFE_INTEGER);
-
 export type LossReason = {kind: 'number'; token: string} | {kind: 'duplicate-key'; key: string};
+
+// The index just past the closing quote of the string that starts at `start`. A loop, not a regular expression: V8's
+// backtracking stack overflows on a regex over a string of about ten million characters (Phase 3 review).
+function stringEnd(text: string, start: number): number {
+  let index = start + 1;
+  for (;;) {
+    const quote = text.indexOf('"', index);
+    let backslashes = 0;
+    while (text[quote - 1 - backslashes] === '\\') {
+      backslashes++;
+    }
+
+    if (backslashes % 2 === 0) {
+      return quote + 1;
+    }
+
+    index = quote + 1;
+  }
+}
 
 export function isKeptExactly(token: string): boolean {
   const value = Number(token);
@@ -20,15 +36,14 @@ export function isKeptExactly(token: string): boolean {
     return false;
   }
 
-  if (/^-?\d+$/u.test(token)) {
-    // Written as an integer (an id, a count): doubles hold every integer up to 2^53 exactly; above that, compare exactly.
-    const exact = BigInt(token);
-    return (exact <= maxSafe && exact >= -maxSafe) || exact === BigInt(value);
-  }
-
+  // Written as an integer (an id, a count): the rewrite must write the same digits. JSON.stringify writes a double above
+  // 2^53 as its shortest decimal form, so 12345678901234567168 (an exact double) becomes 12345678901234567000, and 1e21
+  // and up turn into exponent form.
   // Written with a fraction or an exponent: a floating-point number, rounded to the nearest double as JSON.parse always has.
   // Only a non-zero number that underflowed to 0 has lost its value.
-  return value !== 0 || !/[1-9]/u.test(token.split(/e/iu, 1)[0]!);
+  return /^-?\d+$/u.test(token)
+    ? String(value) === String(BigInt(token))
+    : value !== 0 || !/[1-9]/u.test(token.split(/e/iu, 1)[0]!);
 }
 
 /**
@@ -71,9 +86,9 @@ export function findLoss(text: string): LossReason | undefined {
       }
 
       case '"': {
-        stringPattern.lastIndex = index;
-        const token = stringPattern.exec(text)![0];
-        index += token.length;
+        const end = stringEnd(text, index);
+        const token = text.slice(index, end);
+        index = end;
         if (isExpectKey) {
           const key = JSON.parse(token) as string;
           const seen = stack.at(-1)!;

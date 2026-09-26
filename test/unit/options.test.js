@@ -23,9 +23,6 @@ for (const {name, lib} of builds) {
       const tree = makeTree({'a.json': '{"a":1}'});
       t.after(tree.remove);
       for (const options of [
-        'x',
-        5,
-        true,
         {indent: -1},
         {indent: 11},
         {indent: 1.5},
@@ -47,13 +44,21 @@ for (const {name, lib} of builds) {
       assert.equal(tree.written('a.json'), false);
     });
 
-    test('undefined and null options mean the defaults', t => {
-      const tree = makeTree({'a.json': '{"a":1}', 'b.json': '{"b":1}'});
+    test('undefined, null and anything but an object mean the defaults, as 1.0.6 ignored a second argument', t => {
+      const letters = ['a', 'b', 'c', 'd', 'e'];
+      const tree = makeTree(Object.fromEntries(letters.map(letter => [`${letter}.json`, `{"${letter}":1}`])));
       t.after(tree.remove);
       formatJsonFiles(tree.at('a.json'), undefined);
       formatJsonFiles(tree.at('b.json'), null);
-      assert.equal(tree.read('a.json'), '{\n    "a": 1\n}');
-      assert.equal(tree.read('b.json'), '{\n    "b": 1\n}');
+      formatJsonFiles(tree.at('c.json'), 'x');
+      // Array#forEach passes the index as the second argument.
+      for (const [index, file] of [tree.at('d.json'), tree.at('e.json')].entries()) {
+        formatJsonFiles(file, index);
+      }
+
+      for (const letter of letters) {
+        assert.equal(tree.read(`${letter}.json`), `{\n    "${letter}": 1\n}`);
+      }
     });
 
     test('the path is checked before the options, as 1.0.6 checked it first', () => {

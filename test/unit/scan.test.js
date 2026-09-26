@@ -25,7 +25,11 @@ const NUMBER_CASES = [
   ['-9007199254740993', false],
   ['18014398509481984', true],
   ['12345678901234567890', false],
-  ['12345678901234567168', true],
+  ['12345678901234567168', false],
+  ['1152921504606846976', false],
+  ['18446744073709551616', false],
+  ['1000000000000000000000', false],
+  ['-18014398509481984', true],
   ['1.2345678901234567890e19', true],
   ['1.2345678901234567168e19', true],
   ['123456789012345678900e-1', true],
@@ -95,7 +99,8 @@ for (const {name, lib} of builds) {
       const results = verdicts(lib.default, tokens.map(token => `[${token}]`));
       for (const [index, token] of tokens.entries()) {
         const value = Number(token);
-        const isKeeps = token.includes('e') ? Number.isFinite(value) : BigInt(token) === BigInt(value);
+        // A plain integer is kept when the rewrite writes the same digits; an exponent form is a float.
+        const isKeeps = token.includes('e') ? Number.isFinite(value) : String(value) === String(BigInt(token));
         assert.equal(results[index] === undefined, isKeeps, `${token}: ${results[index] ?? 'accepted'}`);
       }
     });
@@ -130,6 +135,15 @@ for (const {name, lib} of builds) {
   });
 
   describe(`other refusals (${name} build)`, () => {
+    test('a string of ten million characters is scanned, and a huge number is cut short in the reason', () => {
+      const escapes = String.raw`a\"b\\`.repeat(1000);
+      const long = `{"k":"${'x'.repeat(10_000_000)}","e":"${escapes}","k2":1}`;
+      const huge = `[${'9'.repeat(100_000)}]`;
+      const [longResult, hugeResult] = verdicts(lib.default, [long, huge]);
+      assert.equal(longResult, undefined);
+      assert.equal(hugeResult, `number cannot be kept exactly: ${'9'.repeat(40)}…`);
+    });
+
     test('invalid UTF-8, invalid JSON and deep nesting are reported with their reasons', () => {
       const deep = '['.repeat(20_000) + ']'.repeat(20_000);
       const results = verdicts(lib.default, [

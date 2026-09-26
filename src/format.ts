@@ -18,6 +18,11 @@ export type FormatOutcome = {output: Uint8Array} | {reason: string};
 const decoder = new TextDecoder('utf-8', {fatal: true, ignoreBOM: true});
 const encoder = new TextEncoder();
 
+// A reason is one line on stderr, so a million-digit number or a huge key is cut short.
+function shorten(text: string): string {
+  return text.length > 40 ? `${text.slice(0, 40)}…` : text;
+}
+
 export function formatBytes(bytes: Uint8Array, settings: FormatSettings): FormatOutcome {
   let text: string;
   try {
@@ -41,7 +46,7 @@ export function formatBytes(bytes: Uint8Array, settings: FormatSettings): Format
 
   const loss = findLoss(text);
   if (loss) {
-    return {reason: loss.kind === 'number' ? `number cannot be kept exactly: ${loss.token}` : `duplicate key: ${JSON.stringify(loss.key)}`};
+    return {reason: loss.kind === 'number' ? `number cannot be kept exactly: ${shorten(loss.token)}` : `duplicate key: ${shorten(JSON.stringify(loss.key))}`};
   }
 
   let output: string;

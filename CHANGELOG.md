@@ -10,7 +10,7 @@ All notable changes to this package are documented here. The format follows [Kee
 
 - Needs Node 20 or later. The package has an `exports` map, so deep imports such as `format-json-files/index.js` no longer resolve; import the package by its name.
 - Files whose rewrite would change a value are left untouched and reported, never rewritten. 1.0.6 rewrote them with the loss:
-  - an integer that a JavaScript number cannot hold exactly (`12345678901234567890` became `12345678901234567000`);
+  - an integer that would be written with other digits (`12345678901234567890` became `12345678901234567000`, and `1000000000000000000000` became `1e+21`);
   - a key repeated in one object (only the last value was kept);
   - `-0` (written as `0`) and numbers beyond the double range (`1e400` was written as `null`), or a non-zero number that rounds to 0;
   - bytes that are not UTF-8 (a Latin-1 `é` was written back as `�`).
@@ -26,6 +26,7 @@ All notable changes to this package are documented here. The format follows [Kee
 - A file that starts with a UTF-8 byte order mark is formatted, and written without the mark. 1.0.6 could not parse it and skipped it.
 - The walk skips symbolic links named `*.json` and reports them. 1.0.6 wrote through them, to wherever they pointed. Links to directories were never entered, and a link given as the path still throws `Invalid path`, as before.
 - The command-line tool takes several paths. 1.0.6 ignored all but the first.
+- A second argument that is not an object is still ignored, as in 1.0.6, so `paths.forEach(formatJsonFiles)` keeps working.
 
 ### Added
 
@@ -41,6 +42,6 @@ All notable changes to this package are documented here. The format follows [Kee
 ### Security
 
 - No runtime dependencies. 1.x depends on meow 5, whose tree carries three advisories.
-- The walk no longer follows symbolic links (see Changed), so a link inside a tree cannot make it rewrite a file outside the tree.
+- The walk no longer writes through symbolic links (see Changed), so a symbolic link inside a tree cannot make it rewrite a file outside the tree. A hard link is the file itself and is rewritten in place, as before.
 
 [2.0.0]: https://github.com/m4bwav/format-json-files/compare/15891f9...v2.0.0

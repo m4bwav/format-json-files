@@ -14,7 +14,7 @@ summary: "read before the plan or the cleanup: what 1.0.6 is and ships, the old 
 
 ## Summary
 
-Surveyed 2026-09-26 with the package-modernize skill's scripts/survey-npm.sh (raw output at the end), Node 24.18.0 and npm 11.16.0 on Windows. Nothing in the package changed during Phase 0. The golden capture of the published 1.0.6 is `test/golden/1.0.6.json`, recorded by `test/golden/capture-1.0.6.cjs` over the trees in `test/golden/capture-fixtures.cjs` (47 cases, 59 KB; two runs byte-identical).
+Surveyed 2026-09-26 with the package-modernize skill's scripts/survey-npm.sh (raw output at the end), Node 24.18.0 and npm 11.16.0 on Windows. Nothing in the package changed during Phase 0. The golden capture of the published 1.0.6 is `test/golden/1.0.6.json`, recorded by `test/golden/capture-1.0.6.cjs` over the trees in `test/golden/capture-fixtures.cjs` (45 cases: 33 library, 12 CLI; 59 KB; two runs byte-identical).
 
 ## Registry and repository
 

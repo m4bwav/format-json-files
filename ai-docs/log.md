@@ -9,3 +9,8 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 - Baseline in a scratch clone on Node 24.18: snyk stops without a login, xo 0.23 crashes (util.isDate), ava 1 passes 5 tests, nyc 13 reports 0 percent.
 - Golden capture of the published 1.0.6 (meow 5.0.0) in the scratchpad: 47 cases, 59 KB, two runs byte-identical (cmp). Committed as test/golden/1.0.6.json with capture-1.0.6.cjs, capture-fixtures.cjs and codec.cjs; frozen from this commit.
 ## [2026-09-26] index | rebuilt (1 entries)
+- Correction: the capture holds 45 cases (33 library, 12 CLI), not 47.
+
+## [2026-09-26] add | Phase 1: plan and decision record
+- ai-docs/plans/2026-09-26-modernization-and-v2-release.md (D1-D16, exceptions E1-E8) and ai-docs/decisions/2026-09-26-v2-promise-refuse-lossy-files-keep-1.0.6-bytes.md (proposed). Stop: waiting for Mark's rulings.
+## [2026-09-26] index | rebuilt (3 entries)

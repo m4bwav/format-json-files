@@ -1,6 +1,6 @@
 {
   "name": "format-json-files",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Format JSON files in place: one file, or every .json file in a directory tree. Never rewrites a file it cannot keep exactly. Key sorting, check mode for CI, a CLI. Zero dependencies, TypeScript, ESM and CommonJS, Node 20+.",
   "license": "MIT",
   "repository": {

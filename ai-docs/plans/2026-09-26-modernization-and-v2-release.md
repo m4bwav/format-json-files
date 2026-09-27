@@ -131,8 +131,8 @@ export {formatJsonFiles};
 ### Phase 3: review
 - [x] Independent read-only review (prompts/review-subagent.md); findings fixed or answered; summary on the pull request
 ### Phase 4: CI, settings, merge, cleanup
-- [ ] CI green (run id); ruleset on master before the merge; merge after Mark's review (read the SHA and method back)
-- [ ] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted
+- [x] CI green (36277900880, master 36281112143); merged by Mark as merge commit 5292dcf; ruleset 24055957 after the merge
+- [x] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted
 ### Phase 5: release rehearsal
 - [ ] Trusted publisher: already set up by Mark (overlay, 2026-09-26); the first staging run proves it
 - [ ] `preflight-tag-npm.sh 2.0.0-beta.1` READY; tagged; `watch-run.sh` shows the stage id; **stop** for the approval; `verify-registry-npm.sh` VERIFIED

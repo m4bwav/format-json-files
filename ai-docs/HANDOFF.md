@@ -3,23 +3,19 @@
 <!-- Keep under 50 lines. Replace, never append. Written at the end of a work session so the next one starts without re-deriving state. -->
 
 ## Current state
-2.0.0 rewrite merged to master (pull request #2, merge commit 5292dcf; the release-notes lint fix in #3, 50ff9f1). Phase 4 cleanup done: rulesets 24055957 (master, required check ci) and 24055958 (tags admins only), Travis webhook gone, scanning, push protection and private reporting on, workflow permissions read, alerts 0. `2.0.0-beta.2` is STAGED on npm (release run 36281483946, stage id 3b707664-b7a5-46c8-aec1-81cdface1039, tag next). The tag v2.0.0-beta.1 exists but was never staged (lint failure; see the log). Evidence in `ai-docs/log.md`.
+2.0.0 released 2026-09-27 and verified from the registry (npm latest 2.0.0, next 2.0.0-beta.2; provenance, signatures, verify-published run 36282487927). 1.x (1.0.0 to 1.0.6) deprecated by Mark; issue #1 answered and closed. master is protected by ruleset 24055957 (required check ci), tags by 24055958 (admins only). No open pull requests or issues, 0 webhooks, 0 alerts. The tag v2.0.0-beta.1 exists but was never staged (release-notes lint failure, fixed in #3).
 
-## In progress
-Phase 5 stop: Mark approves 2.0.0-beta.2 in npmjs.com's Staged Packages tab.
-
-## Next steps, in order
-1. After the approval: `bash <skill>/scripts/verify-registry-npm.sh format-json-files 2.0.0-beta.2 m4bwav/format-json-files` (skill at C:\Users\m4bwa\.claude\skills\package-modernize). It must print VERIFIED; `latest` must still be 1.0.6.
-2. Phase 6: date the CHANGELOG heading (`## [2.0.0] - YYYY-MM-DD`), commit through the admin bypass, `preflight-tag-npm.sh 2.0.0 .` READY, `npm version 2.0.0 && git push --follow-tags origin master` in the main session, `watch-run.sh m4bwav/format-json-files release.yml`, stop for Mark's approval, then verify-registry-npm.sh 2.0.0.
-3. Answer issue #1 with the comment in the plan's disposition table (sortKeys ships in 2.0.0), then close it.
-4. Give Mark the deprecation for his own terminal (the agent shell gets EOTP), with the full message, then read it back with `npm view format-json-files@1.0.6 deprecated --prefer-online`:
-   npm deprecate format-json-files@"<2" "1.x can silently change data (big integers, duplicate keys, -0, 1e400) and depends on meow 5; use 2.x"
-5. Phase 7: the inventory row in D:\m4bwa\Claude\Projects\Ai\package-modernization\inventory.md, the kickoff's "what the run found wrong" section (prompts/2026-09-26-format-json-files-kickoff.md), standing work below, and the next package (markdown-plain-link-replacer). Skill lessons L-039 to L-043 are already in the skill's LEARNINGS.md; templates/npm/xo.config.js and .gitignore still need `release-notes.md` (L-039).
-
-## Standing work (after 2.0.0)
-- Dependabot pull requests weekly; merge when ci is green. TypeScript 7 is held in dependabot.yml until xo supports it.
+## Standing work
+- Dependabot pull requests weekly: merge when ci is green; read release notes for majors. TypeScript 7 is held in dependabot.yml until xo supports it.
 - Next major when Node 22 reaches end of life (2027-04-30): floor to 24.
-- The `next` dist-tag stays on the last beta.
+- The `next` dist-tag stays on 2.0.0-beta.2 until the next prerelease.
+- Possible minors, only if asked: a promise-based API, preserving number text.
 
-## Decisions made this session
-Mark accepted every plan recommendation. The review's 7 findings are fixed (comment on pull request #2). Numbers written as plain integers must be written back with the same digits; fraction and exponent forms are floats.
+## Decisions made
+All in the plan (D1-D16, E1-E8) and `ai-docs/decisions/`. After the review: plain-integer numbers must be written back with the same digits; a non-object second argument is ignored as in 1.0.6.
+
+## Dead ends hit
+See the log: tsdown declaration traps for `export =` with types, xo cache hiding errors, xo --fix rewriting `null` and number-token keys, Windows captures lacking file links, release-notes.md linted in release.yml. All are skill lessons L-039 to L-043.
+
+## Next single action
+None in this repository. The next package is markdown-plain-link-replacer (see D:\m4bwa\Claude\Projects\Ai\package-modernization\inventory.md); its kickoff prompt still needs writing.

@@ -1,7 +1,7 @@
 ---
 title: Modernization and v2 release
 kind: plan
-status: active
+status: done
 date: 2026-09-26
 verified: 2026-09-26
 stale_after: never
@@ -15,7 +15,7 @@ The plan for taking format-json-files from 1.0.6 (2018) to a verified 2.0.0, run
 
 ## Status
 
-Active. Phases 0 to 4 done; 2.0.0-beta.2 staged 2026-09-27 (beta.1 burned by a release-notes lint failure). Waiting for Mark's approval on npmjs.com.
+Done 2026-09-27: 2.0.0 released and verified from the registry, 1.x deprecated, issue #1 closed. Standing work in ai-docs/HANDOFF.md.
 
 ## Goal
 
@@ -135,13 +135,13 @@ export {formatJsonFiles};
 - [x] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted
 ### Phase 5: release rehearsal
 - [x] Trusted publisher: already set up by Mark (overlay, 2026-09-26); proven by the beta.2 staging (run 36281483946)
-- [ ] `preflight-tag-npm.sh 2.0.0-beta.1` READY; tagged; `watch-run.sh` shows the stage id; **stop** for the approval; `verify-registry-npm.sh` VERIFIED
+- [x] `preflight-tag-npm.sh 2.0.0-beta.1` READY; tagged; `watch-run.sh` shows the stage id; **stop** for the approval; `verify-registry-npm.sh` VERIFIED
 ### Phase 6: release
-- [ ] Changelog dated; preflight READY; `2.0.0` tagged and staged; **stop** for the approval; `verify-registry-npm.sh` VERIFIED
-- [ ] Issue #1 answered and closed
-- [ ] 1.x deprecated by Mark in his terminal with the full message; read back with `--prefer-online`
+- [x] Changelog dated; preflight READY; `2.0.0` tagged and staged; **stop** for the approval; `verify-registry-npm.sh` VERIFIED
+- [x] Issue #1 answered and closed
+- [x] 1.x deprecated by Mark in his terminal with the full message; read back with `--prefer-online`
 ### Phase 7: wrap-up
-- [ ] HANDOFF.md around standing work; inventory row; lessons into the skill; the kickoff's corrections section
+- [x] HANDOFF.md around standing work; inventory row; lessons into the skill (L-039 to L-043, template fix C-20260927-1); the kickoff's corrections section
 
 ## Test strategy: every artifact, every runtime, and the behaviour itself
 

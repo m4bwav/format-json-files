@@ -62,3 +62,9 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 
 ## [2026-09-27] verify | 2.0.0-beta.2 verified
 - Mark approved the staged beta.2. verify-registry-npm.sh: VERIFIED (dist-tags, provenance, signatures, require/import/bin smoke, GitHub Release, verify-published on Node 20-26 on three OSes, Bun, Deno). CHANGELOG dated 2026-09-27 for 2.0.0.
+
+## [2026-09-27] verify | 2.0.0 released and verified
+- preflight 2.0.0 READY; tagged v2.0.0 (5696fc8); release.yml run 36282156846 staged id 1b8e8d40-19ef-462c-aec7-2ca59a9474cc on latest, provenance logIndex 2969579118, GitHub Release v2.0.0. Mark approved on npmjs.com.
+- verify-registry-npm.sh 2.0.0: VERIFIED (dist-tags latest 2.0.0, next 2.0.0-beta.2; provenance; signature and attestation; require, import and bin smoke; release not a prerelease; verify-published run 36282487927 green).
+- 1.x deprecated by Mark in his terminal. `npm view format-json-files@1.0.6 deprecated --prefer-online` printed nothing right after; the packument (curl registry.npmjs.org/format-json-files) shows the message on 1.0.0 to 1.0.6 and none on 2.x.
+- Issue #1 answered (sortKeys in 2.0.0, release link) and closed.

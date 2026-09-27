@@ -6,8 +6,9 @@ const xoConfig = [
   {
     // The type fixture imports the built package, so it only resolves after a build; the consumer fixtures type-check it against the installed tarball instead.
     // The capture scripts and fixtures ran in a scratch project against the old package and are kept exactly as they were run; the golden JSON is captured data.
+    // release-notes.md is written by release.yml from CHANGELOG.md before it lints; its link definition may go unused there.
     // The TypeScript 5 fixture uses `import = require()` on purpose and is compiled by its own TypeScript in the consumer workspace.
-    ignores: ['ai-docs/**', 'test/consumers/types/**', 'test/consumers/ts5-cjs-interop-off/**', 'test/golden/*.cjs', 'test/golden/*.json'],
+    ignores: ['ai-docs/**', 'release-notes.md', 'test/consumers/types/**', 'test/consumers/ts5-cjs-interop-off/**', 'test/golden/*.cjs', 'test/golden/*.json'],
   },
   {
     space: 2,

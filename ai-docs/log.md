@@ -53,3 +53,9 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 - post-merge-cleanup.sh --apply: webhook 72197148 (Travis) deleted; ruleset 24055957 (master, copied from get-title-at-url 24003504, required check ci) and 24055958 (tags admins only). Alerts 0, open pull requests 0, branches master only, webhooks 0.
 - gh repo edit: description, homepage https://www.npmjs.com/package/format-json-files, topics, wiki and projects off. Secret scanning and push protection enabled; private vulnerability reporting on; default workflow permissions read, pull request approval off.
 - CI on master after the merge: run 36281112143 green. check-readme-images.mjs on the README: every image works (the CI badge now resolves).
+
+## [2026-09-27] add | Phase 5: rehearsal
+- preflight-tag-npm.sh 2.0.0-beta.1 READY; `npm version 2.0.0-beta.1`, `git push --follow-tags` (tag and master through the admin bypass). release.yml run 36281331934 failed in the build job: xo linted the release-notes.md the workflow had just written (unused [2.0.0] link definition). Nothing staged; tag v2.0.0-beta.1 left in place, unused.
+- Fix through pull request #3 (xo and git ignore release-notes.md), CI 36281385356 green, squash-merged 50ff9f1. Skill lesson L-039.
+- preflight 2.0.0-beta.2 READY; tagged a0e9c48; release.yml run 36281483946 green: staged with id 3b707664-b7a5-46c8-aec1-81cdface1039 on tag next, provenance in the transparency log (logIndex 2969570815), GitHub Release v2.0.0-beta.2. This proves the trusted publisher Mark set up on 2026-09-26.
+- Stop: Mark approves the staged 2.0.0-beta.2 on npmjs.com (Staged Packages tab).

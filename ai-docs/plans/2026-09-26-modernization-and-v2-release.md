@@ -15,7 +15,7 @@ The plan for taking format-json-files from 1.0.6 (2018) to a verified 2.0.0, run
 
 ## Status
 
-Active. Phases 2 and 3 done 2026-09-26: pull request #2 open, CI green, review findings fixed. Waiting for Mark's review of the pull request.
+Active. Phases 0 to 4 done; 2.0.0-beta.2 staged 2026-09-27 (beta.1 burned by a release-notes lint failure). Waiting for Mark's approval on npmjs.com.
 
 ## Goal
 
@@ -134,7 +134,7 @@ export {formatJsonFiles};
 - [x] CI green (36277900880, master 36281112143); merged by Mark as merge commit 5292dcf; ruleset 24055957 after the merge
 - [x] One go from Mark for the whole cleanup list (dry run of post-merge-cleanup.sh with ai-docs/notes/dispositions.tsv), then `--apply --tag-ruleset`: alerts 0; tag ruleset; webhook removed; repo settings; secret scanning, push protection, private vulnerability reporting; workflow permissions read; merged v2 branch deleted
 ### Phase 5: release rehearsal
-- [ ] Trusted publisher: already set up by Mark (overlay, 2026-09-26); the first staging run proves it
+- [x] Trusted publisher: already set up by Mark (overlay, 2026-09-26); proven by the beta.2 staging (run 36281483946)
 - [ ] `preflight-tag-npm.sh 2.0.0-beta.1` READY; tagged; `watch-run.sh` shows the stage id; **stop** for the approval; `verify-registry-npm.sh` VERIFIED
 ### Phase 6: release
 - [ ] Changelog dated; preflight READY; `2.0.0` tagged and staged; **stop** for the approval; `verify-registry-npm.sh` VERIFIED

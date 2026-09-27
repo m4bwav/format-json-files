@@ -2,7 +2,7 @@
 
 All notable changes to this package are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the package uses [Semantic Versioning](https://semver.org/).
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-09-27
 
 **The compatibility promise.** With default options, `require('format-json-files')(path)` picks the same files 1.0.6 picked and writes the same bytes to them: 4-space indent, LF line breaks, no final newline, and `JSON.stringify`'s number and key order. It throws the same errors for a missing, non-string or non-existent path. The test suite checks this against 33 library calls and 12 command-line runs recorded from the published 1.0.6 on temporary directory trees, on both builds and every supported Node line. The exceptions are listed below. Each one is either data 1.0.6 destroyed or noise it made: files whose rewrite would change a value are left alone, a byte order mark no longer stops a file being formatted, a file that is already formatted is not written again, `node_modules` and `.git` are skipped, the walk does not follow symbolic links, the function returns a report instead of printing, and the command-line tool reports problems on stderr and exits 1 when a file was skipped.
 

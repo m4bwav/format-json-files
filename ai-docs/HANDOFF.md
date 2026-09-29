@@ -17,5 +17,8 @@ All in the plan (D1-D16, E1-E8) and `ai-docs/decisions/`. After the review: plai
 ## Dead ends hit
 See the log: tsdown declaration traps for `export =` with types, xo cache hiding errors, xo --fix rewriting `null` and number-token keys, Windows captures lacking file links, release-notes.md linted in release.yml. All are skill lessons L-039 to L-043.
 
+## Wiki (2026-09-29)
+GitHub wiki for 2.0.0 written and committed in `D:\m4bwa\Claude\Projects\Ai\format-json-files.wiki`, not pushed; branch wiki-2.0.0 here holds the note, the verification script and its four outputs. How to push, verify and update: [notes/2026-09-29-github-wiki.md](notes/2026-09-29-github-wiki.md). It lists 9 inaccuracies in the shipped docs for the next release (README nesting limit and `"é"` line, CLI help, AGENTS.md, this file's `next` tag). The `next` dist-tag is gone: npm showed only `latest` 2.0.0 on 2026-09-29.
+
 ## Next single action
-None in this repository. The next package is markdown-plain-link-replacer (see D:\m4bwa\Claude\Projects\Ai\package-modernization\inventory.md); its kickoff prompt still needs writing.
+Push the wiki (`git -C D:\m4bwa\Claude\Projects\Ai\format-json-files.wiki push`), then `wikiwright.py live m4bwav/format-json-files <that folder>`. The next package is markdown-plain-link-replacer (see D:\m4bwa\Claude\Projects\Ai\package-modernization\inventory.md).

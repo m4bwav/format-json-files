@@ -1,0 +1,2178 @@
+## installed
+format-json-files@2.0.0 on Node v20.20.2, linux
+
+## esm exports
+[
+  "default",
+  "formatJsonFiles"
+]
+
+## cjs exports
+[
+  "default",
+  "formatJsonFiles"
+]
+
+## api: shapes
+typeof require('format-json-files'): function
+require(...).default === require(...): true
+require(...).formatJsonFiles === require(...): true
+import default === named import: true
+function length: 2
+engines: {"node":">=20"}, bin: {"format-json-files":"./dist/cli.mjs"}, dependencies: {}
+
+## home: command line
+shell node: v20.20.2
+$ format-json-files data
+$ echo $?
+0
+--- files
+data/notes.txt: not written
+data/settings.json: changed
+--- data/settings.json before: 41 bytes, UTF-8, no line breaks
+{"name":"demo","tags":["a","b"],"size":3}
+--- data/settings.json after: 83 bytes, UTF-8, LF, no final newline
+{
+    "name": "demo",
+    "tags": [
+        "a",
+        "b"
+    ],
+    "size": 3
+}
+
+## home: library
+{
+  changed: [ 'data/settings.json' ],
+  unchanged: [ 'data/done.json' ],
+  skipped: [
+    {
+      path: 'data/broken.json',
+      reason: 'not valid JSON: Unexpected end of JSON input'
+    }
+  ]
+}
+--- files
+data/broken.json: not written
+data/done.json: not written
+data/settings.json: changed
+--- data/settings.json before: 24 bytes, UTF-8, no line breaks
+{"name":"demo","size":3}
+--- data/settings.json after: 37 bytes, UTF-8, LF, no final newline
+{
+    "name": "demo",
+    "size": 3
+}
+
+## getting-started: esm
+shell node: v20.20.2
+$ node app.mjs
+{ changed: [ 'data/a.json' ], unchanged: [], skipped: [] }
+$ echo $?
+0
+--- files
+app.mjs: not written
+data/a.json: changed
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+
+## getting-started: cjs
+shell node: v20.20.2
+$ node app.cjs
+{ changed: [ 'data/a.json' ], unchanged: [], skipped: [] }
+$ echo $?
+0
+--- files
+app.cjs: not written
+data/a.json: changed
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 39 bytes, UTF-8, LF, no final newline
+{
+  "a": [
+    1,
+    2
+  ],
+  "b": 1
+}
+
+## getting-started: named export
+shell node: v20.20.2
+$ node app.mjs
+[ 'config.json' ]
+$ echo $?
+0
+--- files
+app.mjs: not written
+config.json: changed
+--- config.json before: 13 bytes, UTF-8, no line breaks
+{"port":8080}
+--- config.json after: 20 bytes, UTF-8, LF, no final newline
+{
+    "port": 8080
+}
+
+## getting-started: typescript
+shell node: v20.20.2
+$ tsc --version
+Version 6.0.3
+$ echo $?
+0
+$ tsc --noEmit --strict --module nodenext --moduleResolution nodenext app.ts
+$ echo $?
+0
+$ tsc --noEmit --strict --module nodenext --moduleResolution nodenext bad.ts
+bad.ts(3,26): error TS2322: Type '"tab"' is not assignable to type 'number | "\t" | undefined'.
+$ echo $?
+2
+--- files
+app.ts: not written
+bad.ts: not written
+
+## getting-started: npx (installed)
+shell node: v20.20.2
+$ npx format-json-files data
+$ echo $?
+0
+--- files
+data/a.json: changed
+--- data/a.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- data/a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+
+## getting-started: node that npx runs
+$ npm --version
+11.16.0
+$ npm exec -c "node --version"
+v20.20.2
+$ echo $?
+0
+
+## getting-started: npx without installing
+shell node: v20.20.2
+$ npx --yes format-json-files@2.0.0 data
+$ echo $?
+0
+--- files
+data/a.json: changed
+--- data/a.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- data/a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+
+## getting-started: npx case with process.execPath
+node v20.20.2
+shell node: v20.20.2
+$ <node> <bin> data
+$ echo $?
+0
+--- files
+data/a.json: changed
+--- data/a.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- data/a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+
+## getting-started: package managers and runtimes
+not run here: Windows binaries only (the Windows run has them)
+
+## api: report
+{
+  changed: [ 'data/raw.json' ],
+  unchanged: [ 'data/done.json' ],
+  skipped: [
+    {
+      path: 'data/id.json',
+      reason: 'number cannot be kept exactly: 12345678901234567890'
+    }
+  ]
+}
+--- files
+data/done.json: not written
+data/id.json: not written
+data/notes.md: not written
+data/raw.json: changed
+--- data/raw.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/raw.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+
+## api: report, absolute path
+{
+  changed: [
+    '<tree>/data/raw.json'
+  ],
+  unchanged: [],
+  skipped: []
+}
+--- files
+data/raw.json: changed
+--- data/raw.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- data/raw.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+
+## api: option indent 2
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 34 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}],"s":"x"}
+--- a.json after: 73 bytes, UTF-8, LF, no final newline
+{
+  "b": 1,
+  "a": [
+    1,
+    {
+      "c": null
+    }
+  ],
+  "s": "x"
+}
+
+## api: option indent tab
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 34 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}],"s":"x"}
+--- a.json after: 60 bytes, UTF-8, LF, no final newline
+{
+	"b": 1,
+	"a": [
+		1,
+		{
+			"c": null
+		}
+	],
+	"s": "x"
+}
+
+## api: option sortKeys
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 34 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}],"s":"x"}
+--- a.json after: 99 bytes, UTF-8, LF, no final newline
+{
+    "a": [
+        1,
+        {
+            "c": null
+        }
+    ],
+    "b": 1,
+    "s": "x"
+}
+
+## api: option finalNewline
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 34 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}],"s":"x"}
+--- a.json after: 100 bytes, UTF-8, LF, final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        {
+            "c": null
+        }
+    ],
+    "s": "x"
+}
+
+
+## api: option eol crlf
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 34 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}],"s":"x"}
+--- a.json after: 108 bytes, UTF-8, CRLF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        {
+            "c": null
+        }
+    ],
+    "s": "x"
+}
+
+## api: option indent 0
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 37 bytes, UTF-8, no line breaks
+{ "b": 1, "a": [ 1, { "c": null } ] }
+--- a.json after: 26 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,{"c":null}]}
+
+## api: option check
+{
+  changed: [ 'raw.json' ],
+  unchanged: [ 'done.json' ],
+  skipped: [
+    {
+      path: 'bad.json',
+      reason: "not valid JSON: Expected property name or '}' in JSON at position 1"
+    }
+  ]
+}
+--- files
+bad.json: not written
+done.json: not written
+raw.json: not written
+
+## api: option eol auto
+{
+  changed: [ 'crlf.json', 'lf.json', 'mixed.json' ],
+  unchanged: [],
+  skipped: []
+}
+--- files
+crlf.json: changed
+lf.json: changed
+mixed.json: changed
+--- crlf.json before: 16 bytes, UTF-8, CRLF, final newline
+{
+  "a": 1
+}
+
+--- crlf.json after: 18 bytes, UTF-8, CRLF, final newline
+{
+    "a": 1
+}
+
+--- lf.json before: 13 bytes, UTF-8, LF, final newline
+{
+  "a": 1
+}
+
+--- lf.json after: 15 bytes, UTF-8, LF, final newline
+{
+    "a": 1
+}
+
+--- mixed.json before: 16 bytes, UTF-8, mixed line breaks (1 CRLF, 1 LF, 0 CR), final newline
+{"a":1,
+"b":2}
+
+--- mixed.json after: 31 bytes, UTF-8, CRLF, final newline
+{
+    "a": 1,
+    "b": 2
+}
+
+
+## api: option ignore default
+[ 'dist/b.json', 'src/a.json' ]
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## api: option ignore dist
+[ '.git/c.json', 'node_modules/p/package.json', 'src/a.json' ]
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## api: option ignore keep defaults
+[ 'src/a.json' ]
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## api: option ignore none
+[
+  '.git/c.json',
+  'dist/b.json',
+  'node_modules/p/package.json',
+  'src/a.json'
+]
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## api: ignored name given as the path
+[ 'node_modules/p/package.json' ]
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## api: errors
+formatJsonFiles()
+  Error: Path argument not set
+formatJsonFiles('')
+  Error: Path argument not set
+formatJsonFiles(null)
+  Error: Path argument not set
+formatJsonFiles(123)
+  TypeError: Target path argument is not a string
+formatJsonFiles(['a.json'])
+  TypeError: Target path argument is not a string
+formatJsonFiles('missing')
+  Error: Invalid path
+formatJsonFiles('missing.json')
+  Error: Invalid path
+formatJsonFiles('a.json', {indent: 11})
+  TypeError: The indent option must be an integer from 0 to 10, or '\t'
+formatJsonFiles('a.json', {indent: '2'})
+  TypeError: The indent option must be an integer from 0 to 10, or '\t'
+formatJsonFiles('a.json', {indent: 2.5})
+  TypeError: The indent option must be an integer from 0 to 10, or '\t'
+formatJsonFiles('a.json', {indent: 'tab'})
+  TypeError: The indent option must be an integer from 0 to 10, or '\t'
+formatJsonFiles('a.json', {sortKeys: 'yes'})
+  TypeError: The sortKeys option must be a boolean
+formatJsonFiles('a.json', {check: 1})
+  TypeError: The check option must be a boolean
+formatJsonFiles('a.json', {finalNewline: null})
+  TypeError: The finalNewline option must be a boolean
+formatJsonFiles('a.json', {eol: 'CRLF'})
+  TypeError: The eol option must be 'lf', 'crlf' or 'auto'
+formatJsonFiles('a.json', {ignore: 'dist'})
+  TypeError: The ignore option must be an array of directory names
+formatJsonFiles('a.json', {ignore: [1]})
+  TypeError: The ignore option must be an array of directory names
+formatJsonFiles('missing', {indent: 11})
+  TypeError: The indent option must be an integer from 0 to 10, or '\t'
+formatJsonFiles('a.json', {check: true, unknown: 1})
+  returned { changed: [ 'a.json' ], unchanged: [], skipped: [] }
+formatJsonFiles('a.json', 'ignored')
+  returned { changed: [ 'a.json' ], unchanged: [], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## api: forEach passes an index, ignored
+a.json 1
+b.json 1
+--- files
+a.json: changed
+b.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- b.json before: 7 bytes, UTF-8, no line breaks
+{"b":2}
+--- b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 2
+}
+
+## api: forEach(formatJsonFiles)
+done
+--- files
+a.json: changed
+b.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- b.json before: 7 bytes, UTF-8, no line breaks
+{"b":2}
+--- b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 2
+}
+
+## api: cjs build gives the same report
+{
+  changed: [ 'data/raw.json' ],
+  unchanged: [ 'data/done.json' ],
+  skipped: [
+    {
+      path: 'data/id.json',
+      reason: 'number cannot be kept exactly: 12345678901234567890'
+    }
+  ]
+}
+--- files
+data/done.json: not written
+data/id.json: not written
+data/notes.md: not written
+data/raw.json: changed
+--- data/raw.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/raw.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+
+## format: default output
+shell node: v20.20.2
+$ format-json-files a.json
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 60 bytes, UTF-8, no line breaks
+{"name":"demo","list":[1,2,{"x":null}],"empty":{},"none":[]}
+--- a.json after: 140 bytes, UTF-8, LF, no final newline
+{
+    "name": "demo",
+    "list": [
+        1,
+        2,
+        {
+            "x": null
+        }
+    ],
+    "empty": {},
+    "none": []
+}
+
+## format: already formatted files are not written
+{
+  changed: [ 'newline.json', 'raw.json' ],
+  unchanged: [ 'done.json' ],
+  skipped: []
+}
+--- files
+done.json: not written
+newline.json: changed
+raw.json: changed
+--- newline.json before: 15 bytes, UTF-8, LF, final newline
+{
+    "a": 1
+}
+
+--- newline.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- raw.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- raw.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## format: second run
+{ changed: [ 'a.json' ], unchanged: [], skipped: [] }
+{ changed: [], unchanged: [ 'a.json' ], skipped: [] }
+--- files
+a.json: changed
+--- a.json before: 11 bytes, UTF-8, no line breaks
+{"a":[1,2]}
+--- a.json after: 41 bytes, UTF-8, LF, no final newline
+{
+    "a": [
+        1,
+        2
+    ]
+}
+
+## format: numbers
+shell node: v20.20.2
+$ format-json-files numbers.json
+$ echo $?
+0
+--- files
+numbers.json: changed
+--- numbers.json before: 183 bytes, UTF-8, no line breaks
+{"int":1,"float":1.5,"trailing":1.0,"exp":1e5,"exp2":1E+2,"neg":-3,"small":0.1,"tiny":5e-324,"avogadro":6.02e23,"precise":0.1000000000000000055511151231257827,"safe":9007199254740991}
+--- numbers.json after: 218 bytes, UTF-8, LF, no final newline
+{
+    "int": 1,
+    "float": 1.5,
+    "trailing": 1,
+    "exp": 100000,
+    "exp2": 100,
+    "neg": -3,
+    "small": 0.1,
+    "tiny": 5e-324,
+    "avogadro": 6.02e+23,
+    "precise": 0.1,
+    "safe": 9007199254740991
+}
+
+## format: key order
+shell node: v20.20.2
+$ format-json-files keys.json
+$ echo $?
+0
+--- files
+keys.json: changed
+--- keys.json before: 65 bytes, UTF-8, no line breaks
+{"b":1,"a":2,"10":3,"2":4,"B":5,"c":{"z":1,"y":2},"list":[3,1,2]}
+--- keys.json after: 165 bytes, UTF-8, LF, no final newline
+{
+    "2": 4,
+    "10": 3,
+    "b": 1,
+    "a": 2,
+    "B": 5,
+    "c": {
+        "z": 1,
+        "y": 2
+    },
+    "list": [
+        3,
+        1,
+        2
+    ]
+}
+
+## format: key order, sorted
+shell node: v20.20.2
+$ format-json-files --sort-keys keys.json
+$ echo $?
+0
+--- files
+keys.json: changed
+--- keys.json before: 65 bytes, UTF-8, no line breaks
+{"b":1,"a":2,"10":3,"2":4,"B":5,"c":{"z":1,"y":2},"list":[3,1,2]}
+--- keys.json after: 165 bytes, UTF-8, LF, no final newline
+{
+    "10": 3,
+    "2": 4,
+    "B": 5,
+    "a": 2,
+    "b": 1,
+    "c": {
+        "y": 2,
+        "z": 1
+    },
+    "list": [
+        3,
+        1,
+        2
+    ]
+}
+
+## format: strings
+shell node: v20.20.2
+$ format-json-files strings.json
+$ echo $?
+0
+--- files
+strings.json: changed
+--- strings.json before: 121 bytes, UTF-8, no line breaks
+{"slash":"a\/b","unicode":"\u00e9","control":"\u0001","tab":"a\tb","quote":"\"","emoji":"\ud83d\ude00","plain":"e-acute"}
+--- strings.json after: 151 bytes, UTF-8, LF, no final newline
+{
+    "slash": "a/b",
+    "unicode": "é",
+    "control": "\u0001",
+    "tab": "a\tb",
+    "quote": "\"",
+    "emoji": "😀",
+    "plain": "e-acute"
+}
+
+## format: line separator
+shell node: v20.20.2
+$ format-json-files sep.json
+$ echo $?
+0
+bytes after: 7b 0a 20 20 20 20 22 73 65 70 22 3a 20 22 e2 80 a8 22 0a 7d
+--- files
+sep.json: changed
+--- sep.json before: 16 bytes, UTF-8, no line breaks
+{"sep":"\u2028"}
+--- sep.json after: 20 bytes, UTF-8, LF, no final newline
+{
+    "sep": " "
+}
+
+## format: whitespace around
+shell node: v20.20.2
+$ format-json-files ws.json
+$ echo $?
+0
+--- files
+ws.json: changed
+--- ws.json before: 14 bytes, UTF-8, LF, final newline
+
+ {"a":1}
+
+
+--- ws.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## format: scalars
+shell node: v20.20.2
+$ format-json-files .
+$ echo $?
+0
+--- files
+array.json: not written
+null.json: not written
+number.json: not written
+object.json: not written
+string.json: not written
+
+## format: values that would change
+shell node: v20.20.2
+$ format-json-files .
+dup.json: duplicate key: "a"
+e21.json: number cannot be kept exactly: 1000000000000000000000
+exact.json: number cannot be kept exactly: 1152921504606846976
+huge.json: number cannot be kept exactly: 1e400
+id.json: number cannot be kept exactly: 12345678901234567890
+negzero-float.json: number cannot be kept exactly: -0.0
+negzero.json: number cannot be kept exactly: -0
+tiny.json: number cannot be kept exactly: 1e-400
+$ echo $?
+1
+--- files
+dup.json: not written
+e21.json: not written
+exact.json: not written
+huge.json: not written
+id.json: not written
+negzero-float.json: not written
+negzero.json: not written
+ok.json: changed
+tiny.json: not written
+--- ok.json before: 47 bytes, UTF-8, no line breaks
+{"x":6.02e23,"y":0.1000000000000000055,"z":0e5}
+--- ok.json after: 47 bytes, UTF-8, LF, no final newline
+{
+    "x": 6.02e+23,
+    "y": 0.1,
+    "z": 0
+}
+
+## format: long reasons are cut
+shell node: v20.20.2
+$ format-json-files .
+key.json: duplicate key: "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk…
+long.json: number cannot be kept exactly: 1111111111111111111111111111111111111111…
+$ echo $?
+1
+--- files
+key.json: not written
+long.json: not written
+
+## format: which files a folder walk picks
+shell node: v20.20.2
+$ format-json-files --check .
+.hidden/h.json
+.json
+Mixed.Json
+UPPER.JSON
+dir.json/inner.json
+lower.json
+sub/deeper/deepest/leaf.json
+with space.json
+$ echo $?
+1
+--- files
+.git/config.json: not written
+.hidden/h.json: not written
+.json: not written
+Mixed.Json: not written
+UPPER.JSON: not written
+data.geojson: not written
+data.json.bak: not written
+data.json5: not written
+data.jsonc: not written
+data.txt: not written
+dir.json/inner.json: not written
+lower.json: not written
+no-extension: not written
+node_modules/pkg/package.json: not written
+sub/deeper/deepest/leaf.json: not written
+sub/node_modules/x.json: not written
+with space.json: not written
+
+## format: report order
+[ 'A.json', 'a/z.json', 'b.json', 'c.json' ]
+--- files
+A.json: changed
+a/z.json: changed
+b.json: changed
+c.json: changed
+--- A.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- A.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- a/z.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a/z.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- b.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- c.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- c.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## commands: help
+shell node: v20.20.2
+$ format-json-files --help
+
+  Format JSON files in place: one file, or every .json file in a directory
+  and its subdirectories.
+
+  Usage
+    $ format-json-files [options] <path> [<path> ...]
+
+  Options
+    --indent <n|tab>     Spaces per level, 0 to 10, or "tab" (default 4)
+    --sort-keys          Sort object keys, at every level
+    --check              Write nothing; list the files that would change
+    --final-newline      End each file with a line break
+    --eol <lf|crlf|auto> Line breaks to write (default lf; auto keeps each file's)
+    --ignore <name>      A directory name not to enter; repeatable. Replaces
+                         the default list (node_modules and .git)
+    --no-ignore          Enter every directory, node_modules and .git too
+    -h, --help           Show this help
+    -v, --version        Show the version
+
+  A file is left alone, and listed on stderr, when it is not valid UTF-8 JSON,
+  when rewriting it would change a value (a number that cannot be kept
+  exactly, a duplicate key), or when it is a symbolic link.
+
+  Exit codes
+    0  every file was formatted or already formatted
+    1  a file was left alone, --check found a file to change, or bad arguments
+
+  Example
+    $ format-json-files ./data
+
+$ echo $?
+0
+
+## commands: version
+shell node: v20.20.2
+$ format-json-files --version
+2.0.0
+$ format-json-files -v
+2.0.0
+$ echo $?
+0
+
+## commands: a folder
+shell node: v20.20.2
+$ format-json-files data
+$ echo $?
+0
+--- files
+data/a.json: changed
+data/c.json: not written
+data/nested/b.json: changed
+data/readme.txt: not written
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+--- data/nested/b.json before: 11 bytes, UTF-8, no line breaks
+{"ok":true}
+--- data/nested/b.json after: 18 bytes, UTF-8, LF, no final newline
+{
+    "ok": true
+}
+
+## commands: a file
+shell node: v20.20.2
+$ format-json-files data/a.json
+$ echo $?
+0
+--- files
+data/a.json: changed
+data/c.json: not written
+data/nested/b.json: not written
+data/readme.txt: not written
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+
+## commands: a file with another name
+shell node: v20.20.2
+$ format-json-files settings.txt .eslintrc
+$ echo $?
+0
+--- files
+.eslintrc: changed
+settings.txt: changed
+--- .eslintrc before: 12 bytes, UTF-8, no line breaks
+{"rules":{}}
+--- .eslintrc after: 19 bytes, UTF-8, LF, no final newline
+{
+    "rules": {}
+}
+--- settings.txt before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- settings.txt after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## commands: several paths
+shell node: v20.20.2
+$ format-json-files a.json more other
+$ echo $?
+0
+--- files
+a.json: changed
+more/b.json: changed
+other/c.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- more/b.json before: 7 bytes, UTF-8, no line breaks
+{"b":2}
+--- more/b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 2
+}
+--- other/c.json before: 7 bytes, UTF-8, no line breaks
+{"c":3}
+--- other/c.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "c": 3
+}
+
+## commands: a glob the shell expands
+shell node: v20.20.2
+$ format-json-files data/*.json
+$ echo $?
+0
+--- files
+data/a.json: changed
+data/c.json: not written
+data/nested/b.json: not written
+data/readme.txt: not written
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+
+## commands: globstar
+shell node: v20.20.2
+$ shopt -s globstar
+$ format-json-files data/**/*.json
+$ echo $?
+0
+--- files
+data/a.json: changed
+data/c.json: not written
+data/nested/b.json: changed
+data/readme.txt: not written
+--- data/a.json before: 17 bytes, UTF-8, no line breaks
+{"b":1,"a":[1,2]}
+--- data/a.json after: 53 bytes, UTF-8, LF, no final newline
+{
+    "b": 1,
+    "a": [
+        1,
+        2
+    ]
+}
+--- data/nested/b.json before: 11 bytes, UTF-8, no line breaks
+{"ok":true}
+--- data/nested/b.json after: 18 bytes, UTF-8, LF, no final newline
+{
+    "ok": true
+}
+
+## commands: a quoted glob
+shell node: v20.20.2
+$ format-json-files 'data/*.json'
+Error: Invalid path
+  path: data/*.json
+$ echo $?
+1
+--- files
+data/a.json: not written
+data/c.json: not written
+data/nested/b.json: not written
+data/readme.txt: not written
+
+## commands: a glob in PowerShell
+not run: Windows only
+
+## commands: check
+shell node: v20.20.2
+$ format-json-files --check data
+data/a.json
+data/nested/b.json
+$ echo $?
+1
+--- files
+data/a.json: not written
+data/c.json: not written
+data/nested/b.json: not written
+data/readme.txt: not written
+
+## commands: check when formatted
+shell node: v20.20.2
+$ format-json-files --check .
+$ echo $?
+0
+--- files
+a.json: not written
+
+## commands: check with a skipped file
+shell node: v20.20.2
+$ format-json-files --check .
+bad.json: not valid JSON: Unexpected end of JSON input
+a.json
+$ echo $?
+1
+--- files
+a.json: not written
+bad.json: not written
+
+## commands: sort keys, indent 2
+shell node: v20.20.2
+$ format-json-files --sort-keys --indent 2 config.json
+$ echo $?
+0
+--- files
+config.json: changed
+--- config.json before: 25 bytes, UTF-8, no line breaks
+{"z":1,"a":{"y":2,"b":3}}
+--- config.json after: 49 bytes, UTF-8, LF, no final newline
+{
+  "a": {
+    "b": 3,
+    "y": 2
+  },
+  "z": 1
+}
+
+## commands: indent tab
+shell node: v20.20.2
+$ format-json-files --indent tab a.json
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 9 bytes, UTF-8, no line breaks
+{"a":[1]}
+--- a.json after: 18 bytes, UTF-8, LF, no final newline
+{
+	"a": [
+		1
+	]
+}
+
+## commands: indent 0
+shell node: v20.20.2
+$ format-json-files --indent 0 a.json
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 19 bytes, UTF-8, no line breaks
+{ "a" : [ 1 , 2 ] }
+--- a.json after: 11 bytes, UTF-8, no line breaks
+{"a":[1,2]}
+
+## commands: final newline
+shell node: v20.20.2
+$ format-json-files --final-newline a.json
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 15 bytes, UTF-8, LF, final newline
+{
+    "a": 1
+}
+
+
+## commands: eol crlf
+shell node: v20.20.2
+$ format-json-files --eol crlf --final-newline a.json
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 18 bytes, UTF-8, CRLF, final newline
+{
+    "a": 1
+}
+
+
+## commands: eol auto
+shell node: v20.20.2
+$ format-json-files --eol auto .
+$ echo $?
+0
+--- files
+crlf.json: changed
+lf.json: changed
+--- crlf.json before: 15 bytes, UTF-8, CRLF, no final newline
+{"a":1,
+"b":2}
+--- crlf.json after: 29 bytes, UTF-8, CRLF, no final newline
+{
+    "a": 1,
+    "b": 2
+}
+--- lf.json before: 14 bytes, UTF-8, LF, no final newline
+{"a":1,
+"b":2}
+--- lf.json after: 26 bytes, UTF-8, LF, no final newline
+{
+    "a": 1,
+    "b": 2
+}
+
+## commands: ignore
+shell node: v20.20.2
+$ format-json-files --check --ignore dist .
+.git/c.json
+node_modules/p/package.json
+src/a.json
+$ echo $?
+1
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## commands: ignore twice
+shell node: v20.20.2
+$ format-json-files --check --ignore dist --ignore node_modules .
+.git/c.json
+src/a.json
+$ echo $?
+1
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## commands: no-ignore
+shell node: v20.20.2
+$ format-json-files --check --no-ignore .
+.git/c.json
+dist/b.json
+node_modules/p/package.json
+src/a.json
+$ echo $?
+1
+--- files
+.git/c.json: not written
+dist/b.json: not written
+node_modules/p/package.json: not written
+src/a.json: not written
+
+## commands: flags after the path
+shell node: v20.20.2
+$ format-json-files a.json --sort-keys
+$ echo $?
+0
+--- files
+a.json: changed
+--- a.json before: 13 bytes, UTF-8, no line breaks
+{"b":1,"a":2}
+--- a.json after: 26 bytes, UTF-8, LF, no final newline
+{
+    "a": 2,
+    "b": 1
+}
+
+## commands: a skipped file
+shell node: v20.20.2
+$ format-json-files .
+bad.json: not valid JSON: Unexpected end of JSON input
+id.json: number cannot be kept exactly: 12345678901234567890
+$ echo $?
+1
+--- files
+bad.json: not written
+good.json: changed
+id.json: not written
+--- good.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- good.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## commands: no path
+shell node: v20.20.2
+$ format-json-files
+Error: Path argument not set
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: a missing path
+shell node: v20.20.2
+$ format-json-files missing a.json
+Error: Invalid path
+  path: missing
+$ echo $?
+1
+--- files
+a.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## commands: usage error --nope .
+shell node: v20.20.2
+$ format-json-files --nope .
+error: Unknown option '--nope'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- "--nope"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --indent 11 .
+shell node: v20.20.2
+$ format-json-files --indent 11 .
+error: --indent takes 0 to 10 or "tab", not "11"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --indent x .
+shell node: v20.20.2
+$ format-json-files --indent x .
+error: --indent takes 0 to 10 or "tab", not "x"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --indent
+shell node: v20.20.2
+$ format-json-files --indent
+error: Option '--indent <value>' argument missing
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --indent -1 .
+shell node: v20.20.2
+$ format-json-files --indent -1 .
+error: Option '--indent' argument is ambiguous.
+Did you forget to specify the option argument for '--indent'?
+To specify an option argument starting with a dash use '--indent=-XYZ'.
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --indent=-1 .
+shell node: v20.20.2
+$ format-json-files --indent=-1 .
+error: --indent takes 0 to 10 or "tab", not "-1"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --eol cr .
+shell node: v20.20.2
+$ format-json-files --eol cr .
+error: --eol takes lf, crlf or auto, not "cr"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error --check=yes .
+shell node: v20.20.2
+$ format-json-files --check=yes .
+error: Option '--check' does not take an argument
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: usage error -x .
+shell node: v20.20.2
+$ format-json-files -x .
+error: Unknown option '-x'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- "-x"
+Run format-json-files --help for the usage.
+$ echo $?
+1
+--- files
+a.json: not written
+
+## commands: a path that starts with a dash
+shell node: v20.20.2
+$ format-json-files -- -odd.json
+$ echo $?
+0
+--- files
+-odd.json: changed
+--- -odd.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- -odd.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## commands: help wins over paths
+shell node: v20.20.2
+$ format-json-files --help a.json | head -3
+
+  Format JSON files in place: one file, or every .json file in a directory
+  and its subdirectories.
+$ echo $?
+0
+--- files
+a.json: not written
+
+## edge: byte order mark
+shell node: v20.20.2
+$ format-json-files bom.json
+$ echo $?
+0
+--- files
+bom.json: changed
+--- bom.json before: 10 bytes, UTF-8, BOM, no line breaks
+{"a":1}
+--- bom.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: byte order mark, formatted text
+shell node: v20.20.2
+$ format-json-files bom.json
+$ echo $?
+0
+--- files
+bom.json: changed
+--- bom.json before: 17 bytes, UTF-8, BOM, LF, no final newline
+{
+    "a": 1
+}
+--- bom.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: utf-16
+shell node: v20.20.2
+$ format-json-files utf16.json
+utf16.json: not UTF-8
+$ echo $?
+1
+--- files
+utf16.json: not written
+
+## edge: latin-1
+shell node: v20.20.2
+$ format-json-files latin1.json
+latin1.json: not UTF-8
+$ echo $?
+1
+--- files
+latin1.json: not written
+
+## edge: crlf
+shell node: v20.20.2
+$ format-json-files crlf.json
+$ echo $?
+0
+--- files
+crlf.json: changed
+--- crlf.json before: 29 bytes, UTF-8, CRLF, final newline
+{
+  "a": 1,
+  "b": [2]
+}
+
+--- crlf.json after: 42 bytes, UTF-8, LF, no final newline
+{
+    "a": 1,
+    "b": [
+        2
+    ]
+}
+
+## edge: crlf kept
+shell node: v20.20.2
+$ format-json-files --eol auto --final-newline crlf.json
+$ echo $?
+0
+--- files
+crlf.json: changed
+--- crlf.json before: 29 bytes, UTF-8, CRLF, final newline
+{
+  "a": 1,
+  "b": [2]
+}
+
+--- crlf.json after: 49 bytes, UTF-8, CRLF, final newline
+{
+    "a": 1,
+    "b": [
+        2
+    ]
+}
+
+
+## edge: not JSON
+shell node: v20.20.2
+$ format-json-files .
+block-comment.json: not valid JSON: Expected ',' or '}' after property value in JSON at position 8
+comments.json: not valid JSON: Expected property name or '}' in JSON at position 4
+empty.json: not valid JSON: Unexpected end of JSON input
+nan.json: not valid JSON: Unexpected token 'N', "{"a":NaN}" is not valid JSON
+single-quotes.json: not valid JSON: Expected property name or '}' in JSON at position 1
+trailing-comma-array.json: not valid JSON: Unexpected token ']', "[1,2,]" is not valid JSON
+trailing-comma.json: not valid JSON: Expected double-quoted property name in JSON at position 7
+truncated.json: not valid JSON: Expected ',' or ']' after array element in JSON at position 9
+two-values.json: not valid JSON: Unexpected non-whitespace character after JSON at position 7
+unquoted-key.json: not valid JSON: Expected property name or '}' in JSON at position 1
+whitespace-only.json: not valid JSON: Unexpected end of JSON input
+$ echo $?
+1
+--- files
+block-comment.json: not written
+comments.json: not written
+empty.json: not written
+nan.json: not written
+single-quotes.json: not written
+trailing-comma-array.json: not written
+trailing-comma.json: not written
+truncated.json: not written
+two-values.json: not written
+unquoted-key.json: not written
+whitespace-only.json: not written
+
+## edge: deep nesting
+{
+  changed: [ 'after.json' ],
+  unchanged: [],
+  skipped: [
+    { path: 'deep-10000.json', reason: 'nested too deeply' },
+    { path: 'deep-5000.json', reason: 'nested too deeply' }
+  ]
+}
+--- files
+after.json: changed
+deep-10000.json: not written
+deep-5000.json: not written
+--- after.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- after.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: nesting limit
+deepest formatted: 4105, first skipped: 4106 (in-process, default stack)
+deepest formatted: 4102, first skipped: 4103 (format-json-files --check, default stack)
+--- files
+
+## edge: read-only file
+shell node: v20.20.2
+$ format-json-files .
+locked.json: cannot write: EACCES
+$ echo $?
+1
+--- files
+locked-done.json: not written (read-only)
+locked.json: not written (read-only)
+open.json: changed
+--- open.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- open.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: read-only file, check
+shell node: v20.20.2
+$ format-json-files --check .
+locked.json
+$ echo $?
+1
+--- files
+locked.json: not written (read-only)
+
+## edge: symbolic link to a file
+shell node: v20.20.2
+$ format-json-files inside
+inside/link.json: symbolic link
+$ echo $?
+1
+$ format-json-files inside/link.json
+Error: Invalid path
+  path: inside/link.json
+$ echo $?
+1
+--- files
+inside/link.json: not written (symbolic link to ../outside/target.json)
+inside/plain.json: changed
+outside/target.json: not written
+--- inside/plain.json before: 7 bytes, UTF-8, no line breaks
+{"b":2}
+--- inside/plain.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 2
+}
+
+## edge: link to a folder
+link type: symbolic link to a folder
+shell node: v20.20.2
+$ format-json-files inside
+$ echo $?
+0
+$ format-json-files inside/linked
+Error: Invalid path
+  path: inside/linked
+$ echo $?
+1
+$ format-json-files inside/linked/o.json
+$ echo $?
+0
+--- files
+inside/i.json: changed
+inside/linked: not written (symbolic link to ../outside)
+outside/o.json: changed
+--- inside/i.json before: 7 bytes, UTF-8, no line breaks
+{"i":1}
+--- inside/i.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "i": 1
+}
+--- outside/o.json before: 7 bytes, UTF-8, no line breaks
+{"o":1}
+--- outside/o.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "o": 1
+}
+
+## edge: hard link
+shell node: v20.20.2
+$ format-json-files a.json
+$ echo $?
+0
+--- files
+a.json: changed
+elsewhere/same.json: changed
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+--- elsewhere/same.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- elsewhere/same.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: a directory named like a file
+shell node: v20.20.2
+$ format-json-files dir.json
+$ echo $?
+0
+--- files
+dir.json/inner.json: changed
+--- dir.json/inner.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- dir.json/inner.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## edge: a file that is not JSON given by name
+shell node: v20.20.2
+$ format-json-files README.md data.csv
+README.md: not valid JSON: Unexpected token '#', "# Title" is not valid JSON
+data.csv: not valid JSON: Unexpected token 'a', "a,b
+1,2" is not valid JSON
+$ echo $?
+1
+--- files
+README.md: not written
+data.csv: not written
+
+## edge: missing paths
+shell node: v20.20.2
+$ format-json-files missing.json
+Error: Invalid path
+  path: missing.json
+$ echo $?
+1
+$ format-json-files missing/
+Error: Invalid path
+  path: missing/
+$ echo $?
+1
+--- files
+a.json: not written
+
+## edge: an empty folder
+shell node: v20.20.2
+$ format-json-files empty
+$ echo $?
+0
+--- files
+
+## edge: unreadable folder
+not tested: this file system ignores folder modes (WSL drvfs); the repository's walk test covers it on Linux CI
+--- files
+b.json: not written
+shut/a.json: not written
+
+## recipes: ci check
+shell node: v20.20.2
+$ format-json-files --check config
+config/app.json
+$ echo $?
+1
+--- files
+config/app.json: not written
+config/ok.json: not written
+
+## recipes: npm script
+shell node: v20.20.2
+$ npm run --silent check:json
+config/app.json
+$ echo $?
+1
+$ npm run --silent format:json
+$ echo $?
+0
+$ npm run --silent check:json
+$ echo $?
+0
+--- files
+config/app.json: changed
+package.json: not written
+--- config/app.json before: 32 bytes, UTF-8, no line breaks
+{"port":8080,"host":"localhost"}
+--- config/app.json after: 42 bytes, UTF-8, LF, final newline
+{
+  "host": "localhost",
+  "port": 8080
+}
+
+
+## recipes: only changed files in git
+shell node: v20.20.2
+$ printf '{"a":2}' > a.json
+$ echo $?
+0
+$ git status --short
+ M a.json
+$ echo $?
+0
+$ git diff --name-only --diff-filter=d -- '*.json' | xargs -r format-json-files
+$ echo $?
+0
+$ git diff --stat
+ a.json | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+$ echo $?
+0
+--- files
+a.json: changed
+b.json: not written
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 2
+}
+
+## recipes: xargs without -r
+shell node: v20.20.2
+$ printf "" | xargs format-json-files
+Error: Path argument not set
+$ echo $?
+123
+--- files
+a.json: not written
+
+## recipes: several folders from a script
+shell node: v20.20.2
+$ node format-json.mjs
+config: 1 changed, 0 unchanged
+locales: 1 changed, 0 unchanged
+locales/fr.json: duplicate key: "hi"
+$ echo $?
+1
+--- files
+config/app.json: changed
+format-json.mjs: not written
+locales/en.json: changed
+locales/fr.json: not written
+--- config/app.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- config/app.json after: 13 bytes, UTF-8, LF, final newline
+{
+  "a": 1
+}
+
+--- locales/en.json before: 14 bytes, UTF-8, no line breaks
+{"hi":"Hello"}
+--- locales/en.json after: 20 bytes, UTF-8, LF, final newline
+{
+  "hi": "Hello"
+}
+
+
+## recipes: translation files
+shell node: v20.20.2
+$ format-json-files --sort-keys ./my-folder/my-file.json
+$ echo $?
+0
+--- files
+my-folder/my-file.json: changed
+--- my-folder/my-file.json before: 73 bytes, UTF-8, no line breaks
+{"welcome":"Welcome","about":"About","nav":{"home":"Home","back":"Back"}}
+--- my-folder/my-file.json after: 117 bytes, UTF-8, LF, no final newline
+{
+    "about": "About",
+    "nav": {
+        "back": "Back",
+        "home": "Home"
+    },
+    "welcome": "Welcome"
+}
+
+## recipes: editorconfig style
+shell node: v20.20.2
+$ format-json-files --indent 2 --final-newline --eol auto .
+$ echo $?
+0
+--- files
+a.json: changed
+win.json: changed
+--- a.json before: 9 bytes, UTF-8, no line breaks
+{"a":[1]}
+--- a.json after: 23 bytes, UTF-8, LF, final newline
+{
+  "a": [
+    1
+  ]
+}
+
+--- win.json before: 9 bytes, UTF-8, CRLF, final newline
+{"b":2}
+
+--- win.json after: 16 bytes, UTF-8, CRLF, final newline
+{
+  "b": 2
+}
+
+
+## recipes: check from a test
+shell node: v20.20.2
+$ node check-json.mjs
+not formatted: a.json
+cannot format: c.json (duplicate key: "c")
+$ echo $?
+1
+--- files
+a.json: not written
+b.json: not written
+c.json: not written
+check-json.mjs: not written
+
+## versions: old installed
+format-json-files@1.0.6
+
+## versions: 1.0.6 on files that lose data
+shell node: v20.20.2
+$ format-json-files .
+Error processing target file: bom.json, skipping.
+Original Error: Error: Syntax Error processing file: `bom.json`. Triggering Error: SyntaxError: Unexpected token '﻿', "﻿{"a":1}" is not valid JSON
+$ echo $?
+0
+--- files
+bom.json: not written
+done.json: written, same bytes
+dup.json: changed
+huge.json: changed
+id.json: changed
+latin1.json: changed
+negzero.json: changed
+--- dup.json before: 13 bytes, UTF-8, no line breaks
+{"a":1,"a":2}
+--- dup.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 2
+}
+--- huge.json before: 11 bytes, UTF-8, no line breaks
+{"x":1e400}
+--- huge.json after: 17 bytes, UTF-8, LF, no final newline
+{
+    "x": null
+}
+--- id.json before: 27 bytes, UTF-8, no line breaks
+{"id":12345678901234567890}
+--- id.json after: 34 bytes, UTF-8, LF, no final newline
+{
+    "id": 12345678901234567000
+}
+--- latin1.json before: 9 bytes, not UTF-8, no line breaks
+{"a":"\xE9"}
+--- latin1.json after: 18 bytes, UTF-8, LF, no final newline
+{
+    "a": "�"
+}
+--- negzero.json before: 8 bytes, UTF-8, no line breaks
+{"z":-0}
+--- negzero.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "z": 0
+}
+
+## versions: 2.0.0 on files that lose data
+shell node: v20.20.2
+$ format-json-files .
+dup.json: duplicate key: "a"
+huge.json: number cannot be kept exactly: 1e400
+id.json: number cannot be kept exactly: 12345678901234567890
+latin1.json: not UTF-8
+negzero.json: number cannot be kept exactly: -0
+$ echo $?
+1
+--- files
+bom.json: changed
+done.json: not written
+dup.json: not written
+huge.json: not written
+id.json: not written
+latin1.json: not written
+negzero.json: not written
+--- bom.json before: 10 bytes, UTF-8, BOM, no line breaks
+{"a":1}
+--- bom.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 1.0.6 library
+Error processing target file: bad.json, skipping.
+Original Error: Error: Syntax Error processing file: `bad.json`. Triggering Error: SyntaxError: Expected property name or '}' in JSON at position 1
+undefined
+--- files
+a.json: changed
+bad.json: not written
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 2.0.0 library
+{
+  changed: [ 'a.json' ],
+  unchanged: [],
+  skipped: [
+    {
+      path: 'bad.json',
+      reason: "not valid JSON: Expected property name or '}' in JSON at position 1"
+    }
+  ]
+}
+--- files
+a.json: changed
+bad.json: not written
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 1.0.6 --sort-keys
+shell node: v20.20.2
+$ format-json-files --sort-keys .
+Error: Path argument not set
+$ echo $?
+1
+--- files
+a.json: not written
+
+## versions: 1.0.6 two paths
+shell node: v20.20.2
+$ format-json-files a.json b.json
+$ echo $?
+0
+--- files
+a.json: changed
+b.json: not written
+--- a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 1.0.6 node_modules
+shell node: v20.20.2
+$ format-json-files .
+$ echo $?
+0
+--- files
+.git/c.json: changed
+dist/b.json: changed
+node_modules/p/package.json: changed
+src/a.json: changed
+--- .git/c.json before: 7 bytes, UTF-8, no line breaks
+{"c":1}
+--- .git/c.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "c": 1
+}
+--- dist/b.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- dist/b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+--- node_modules/p/package.json before: 12 bytes, UTF-8, no line breaks
+{"name":"p"}
+--- node_modules/p/package.json after: 19 bytes, UTF-8, LF, no final newline
+{
+    "name": "p"
+}
+--- src/a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- src/a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 2.0.0 --no-ignore
+shell node: v20.20.2
+$ format-json-files --no-ignore .
+$ echo $?
+0
+--- files
+.git/c.json: changed
+dist/b.json: changed
+node_modules/p/package.json: changed
+src/a.json: changed
+--- .git/c.json before: 7 bytes, UTF-8, no line breaks
+{"c":1}
+--- .git/c.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "c": 1
+}
+--- dist/b.json before: 7 bytes, UTF-8, no line breaks
+{"b":1}
+--- dist/b.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "b": 1
+}
+--- node_modules/p/package.json before: 12 bytes, UTF-8, no line breaks
+{"name":"p"}
+--- node_modules/p/package.json after: 19 bytes, UTF-8, LF, no final newline
+{
+    "name": "p"
+}
+--- src/a.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- src/a.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 1.0.6 symbolic link
+shell node: v20.20.2
+$ format-json-files inside
+$ echo $?
+0
+--- files
+inside/link.json: not written (symbolic link to ../outside/target.json)
+outside/target.json: changed
+--- outside/target.json before: 7 bytes, UTF-8, no line breaks
+{"a":1}
+--- outside/target.json after: 14 bytes, UTF-8, LF, no final newline
+{
+    "a": 1
+}
+
+## versions: 1.0.6 missing path
+shell node: v20.20.2
+$ format-json-files missing
+Error: Invalid path
+$ echo $?
+1
+--- files
+
+## versions: 1.0.6 no path
+shell node: v20.20.2
+$ format-json-files
+Error: Path argument not set
+$ echo $?
+1
+--- files
+
+## versions: 1.0.6 version and help
+shell node: v20.20.2
+$ format-json-files --version
+1.0.6
+$ echo $?
+0
+--- files
+
+## golden: patches for 2.0.0
+- const cli = path.join(packageRoot, 'cli.js');
++ const cli = path.join(packageRoot, (bin => typeof bin === 'string' ? bin : Object.values(bin)[0])(require('format-json-files/package.json').bin));
+- dependencies: {meow: require('meow/package.json').version},
++ dependencies: {meow: (() => {
+    try {
+      return require('meow/package.json').version;
+    } catch {
+      return 'none';
+    }
+  })()},
+
+## golden: 1.0.6 today
+header: format-json-files@1.0.6, meow 5.0.0, linux
+45 cases (33 library, 12 cli); 45 replayed
+library throws: 15 of 15 identical
+library returns and prints: 16 of 18 identical; differ: dir-invalid dir-readonly
+  dir-invalid: recorded "Original Error: Error: Syntax Error processing file: `{{root}}/comments.json`. Triggering Error: SyntaxError: | now "Original Error: Error: Syntax Error processing file: `{{root}}/comments.json`. Triggering Error: SyntaxError:
+  dir-readonly: recorded "Original Error: Error: EPERM: operation not permitted, open '{{root}}/locked.json'" | now "Original Error: Error: EACCES: permission denied, open '{{root}}/locked.json'"
+files: bytes: 44 of 45 identical; differ: dir-links
+  dir-links: target/real.json
+files: written: 44 of 45 identical; differ: dir-links
+files: links present: 42 of 45 identical; differ: dir-links file-through-junction dir-junction-itself
+unavailable links: 42 of 45 identical; differ: dir-links file-through-junction dir-junction-itself
+cli: exit status: 12 of 12 identical
+cli: stdout: 12 of 12 identical
+cli: stderr error lines: 12 of 12 identical
+
+## golden: 2.0.0
+header: format-json-files@2.0.0, meow none, linux
+45 cases (33 library, 12 cli); 45 replayed
+library throws: 15 of 15 identical
+library returns and prints: 0 of 18 identical; differ: arg-extra-arguments arg-trailing-separator arg-relative-dot arg-relative-file file-json file-txt file-invalid dir-shapes dir-invalid dir-names dir-names-subdirectory dir-links file-through-junction dir-depth dir-readonly dir-dependent dir-empty dir-twice
+files: bytes: 39 of 45 identical; differ: dir-shapes dir-invalid dir-names dir-twice cli-two-paths cli-unknown-flag
+  dir-shapes: big-float.json, big-integer.json, duplicate-keys.json, negative-zero.json
+  dir-invalid: bom.json, latin1.json
+  dir-names: .git/config.json, node_modules/pkg/package.json
+  dir-twice: big-float.json, big-integer.json, duplicate-keys.json, negative-zero.json
+  cli-two-paths: one.txt
+  cli-unknown-flag: one.json
+files: written: 39 of 45 identical; differ: dir-shapes dir-invalid dir-names dir-twice cli-two-paths cli-unknown-flag
+files: links present: 42 of 45 identical; differ: dir-links file-through-junction dir-junction-itself
+unavailable links: 42 of 45 identical; differ: dir-links file-through-junction dir-junction-itself
+cli: exit status: 8 of 12 identical; differ: cli-directory cli-invalid-file cli-relative-dot cli-short-flag
+  cli-directory: recorded 0 | now 1
+  cli-invalid-file: recorded 0 | now 1
+  cli-relative-dot: recorded 0 | now 1
+  cli-short-flag: recorded 1 | now 0
+cli: stdout: 6 of 12 identical; differ: cli-help cli-version cli-directory cli-invalid-file cli-relative-dot cli-short-flag
+  cli-help: recorded "\n  Formats json files in the given path.  Files have to have the .json extension when a  | now "\n  Format JSON files in place: one file, or every .json file in a directory\n  and its s
+  cli-version: recorded "1.0.6\n" | now "2.0.0\n"
+  cli-directory: recorded "Error processing target file: {{root}}/bad.json, skipping.\nOriginal Error: Error: Syntax | now ""
+  cli-invalid-file: recorded "Error processing target file: {{root}}/bad.json, skipping.\nOriginal Error: Error: Syntax | now ""
+  cli-relative-dot: recorded "Error processing target file: bad.json, skipping.\nOriginal Error: Error: Syntax Error pr | now ""
+  cli-short-flag: recorded "" | now "\n  Format JSON files in place: one file, or every .json file in a directory\n  and its s
+cli: stderr error lines: 10 of 12 identical; differ: cli-unknown-flag cli-short-flag
+  cli-unknown-flag: recorded ["Error: Path argument not set"] | now []
+  cli-short-flag: recorded ["Error: Path argument not set"] | now []

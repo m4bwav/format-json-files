@@ -68,3 +68,11 @@ Append-only. One line per operation: `## [YYYY-MM-DD] op | title` where op is on
 - verify-registry-npm.sh 2.0.0: VERIFIED (dist-tags latest 2.0.0, next 2.0.0-beta.2; provenance; signature and attestation; require, import and bin smoke; release not a prerelease; verify-published run 36282487927 green).
 - 1.x deprecated by Mark in his terminal. `npm view format-json-files@1.0.6 deprecated --prefer-online` printed nothing right after; the packument (curl registry.npmjs.org/format-json-files) shows the message on 1.0.0 to 1.0.6 and none on 2.x.
 - Issue #1 answered (sortKeys in 2.0.0, release link) and closed.
+
+## [2026-09-29] add | GitHub wiki for 2.0.0 written (committed, not pushed)
+- wikiwright 0.5.0: preflight `placeholder`; 10 pages plus sidebar and footer committed in D:\m4bwa\Claude\Projects\Ai\format-json-files.wiki as c9f5fe5, not pushed. Note: notes/2026-09-29-github-wiki.md, with the verification script, the file-tree kit, the Linux runner and four masked outputs beside it.
+- Verified on scratch trees only: Windows and Linux (WSL), Node 24.18.0 and 20.20.2; pnpm, Yarn 4, Bun, Deno, PowerShell on Windows. check 0 errors; outputs 114 checked, 0 missing; tells 0 strong.
+- Golden replay: 1.0.6 today identical to 1.0.6.json in every view (Windows, Node 24); 2.0.0 differs only where the CHANGELOG says.
+- npm test on this clone: 145 tests, 141 pass, 4 skipped, 0 fail.
+- Found: 9 inaccuracies in the shipped docs (README nesting limit about 10,000 is really 1,390 to 4,770; README `"é"` line lost its escape; AGENTS.md stale; HANDOFF's `next` tag gone) and 18 facts the README lacks; listed in the note.
+## [2026-09-29] index | rebuilt (4 entries)

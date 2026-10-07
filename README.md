@@ -1,5 +1,7 @@
 # format-json-files
 
+![A brass-geared machine beside neat, aligned stacks of paper on a workshop table](https://raw.githubusercontent.com/m4bwav/format-json-files/master/.github/images/banner.jpg)
+
 [![npm version](https://img.shields.io/npm/v/format-json-files.svg)](https://www.npmjs.com/package/format-json-files)
 [![CI](https://github.com/m4bwav/format-json-files/actions/workflows/ci.yml/badge.svg)](https://github.com/m4bwav/format-json-files/actions/workflows/ci.yml)
 [![npm downloads](https://img.shields.io/npm/dm/format-json-files.svg)](https://www.npmjs.com/package/format-json-files)

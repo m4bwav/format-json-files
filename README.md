@@ -120,6 +120,10 @@ It prints nothing when every file was formatted. Each skipped file goes to stder
 - It is not a validator or a linter, and it does not read JSON5 or JSON with comments.
 - It does not keep the text of numbers. `1.0` is written as `1`, `1e5` as `100000`, and `"é"` as `"é"`, as `JSON.stringify` writes them.
 
+## Package page
+
+- npm: [format-json-files](https://www.npmjs.com/package/format-json-files)
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
